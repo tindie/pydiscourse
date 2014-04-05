@@ -9,7 +9,7 @@ class DiscourseClient(object):
         self.api_key = api_key
 
     def user(self, username):
-        return self.get('users/{0}.json'.format(username))['user']
+        return self.get('/users/{0}.json'.format(username))['user']
 
     def create_user(self, name, username, email, password):
         r = self.get('users/hp.json')
@@ -19,7 +19,20 @@ class DiscourseClient(object):
                   password=password, password_confirmation=confirmations, challenge=challenge)
 
     def activate_user(self, user_id):
-        return self.put('/admin/users/{0}/activate'.format(user_id))
+        return self.put('/admin/users/{0:d}/activate'.format(user_id))
+
+    def update_avatar(self, username, image):
+        with open(image) as f:
+            return self.put('/users/{0}/preferences/avatar'.format(username), file=f)
+
+    def update_email(self, username, email):
+        return self.put('/users/{0}/preferences/email'.format(username), email=email)
+
+    def update_user(self, username, **kwargs):
+        return self.put('/users/{0}'.format(username), **kwargs)
+
+    def update_username(self, username, new_username):
+        return self.put('/users/{0}/preferences/username'.format(username), username=new_username)
 
     def hot_topics(self, **params):
         return self.get('/hot.json', **params)
@@ -31,7 +44,7 @@ class DiscourseClient(object):
         return self.get('/new.json', **params)
 
     def topic(self, topic_id, **params):
-        return self.get('/t/{0}.json'.format(topic_id), **params)
+        return self.get('/t/{0:d}.json'.format(topic_id), **params)
 
     def topics_by(self, username, **params):
         url = '/topics/created-by/{0}.json'.format(username)
@@ -42,7 +55,7 @@ class DiscourseClient(object):
             'email': user_email,
             'topic_id': topic_id,
         }
-        return self.post('/t/{0}/invite.json'.format(topic_id), params)
+        return self.post('/t/{0:d}/invite.json'.format(topic_id), params)
 
     def search(self, term, **params):
         params['term'] = term
@@ -67,7 +80,7 @@ class DiscourseClient(object):
     def _request(self, verb, path, params):
         params['api_key'] = self.api_key
         params['api_username'] = self.api_username
-        url = '{0}/{1}'.format(self.host, path)
+        url = self.host + path
         r = requests.request(verb, url, params=params)
         r.raise_for_status()
         return r
