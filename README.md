@@ -1,31 +1,33 @@
 pydiscourse
-===========
+------------
+A Python library for the Discourse API.
+Its pretty basic right now but you need to start somewhere.
 
-A Python library for the Discourse API
 
+Examples
+-----------
+Create a client connection to a Discourse server::
 
-# Command line
-To help inspect and experiment with the Discourse API pydiscourse provides a simple command line client.
+    from pydiscourse.client import DiscourseClient
+    client = DiscourseClient('http://example.com', api_username='username', api_key='areallylongstringfromdiscourse')
+
+Get info about a user::
+
+    user = client.user('eviltrout')
+    print user
+
+    user_topics = client.topics_by('johnsmith')
+    print user_topics
+
+Create a new user::
+
+    user = client.create_user('The Black Knight', 'blacknight', 'knight@python.org', 'justafleshwound')
+
+Command line
+----------------
+
+To help experiment with the Discourse API, pydiscourse provides a simple command line client::
 
     pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY latest_topics
     pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY topics_by johnsmith
     pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY user eviltrout
-
-# Development
-
-## Live Testing
-You can test against a Discourse instance by following the [Official Discourse developement instructions][discoursedev].
-For the impatient here is the quick and dirty version:
-
-    git clone git@github.com:discourse/discourse.git
-    cd discourse
-    vagrant up
-    vagrant ssh
-    cd /vagrant
-    bundle install
-    bundle exec rake db:migrate
-    bundle exec rails s
-
-Once running you can access the Discourse install at http://localhost:4000.
-
-[discoursedev]: https://github.com/discourse/discourse/blob/master/docs/VAGRANT.md "Discourse Vagrant"
