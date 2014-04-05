@@ -1,5 +1,6 @@
 Development
 ------------
+Refer to, https://github.com/discourse/discourse_api/blob/master/routes.txt for a list of all operations available in Discourse.
 
 Unit tests
 --------------

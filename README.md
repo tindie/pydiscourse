@@ -3,7 +3,6 @@ pydiscourse
 A Python library for the Discourse API.
 Its pretty basic right now but you need to start somewhere.
 
-
 Examples
 -----------
 Create a client connection to a Discourse server::
