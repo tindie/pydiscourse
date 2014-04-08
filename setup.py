@@ -35,6 +35,11 @@ setup(
     license="BSD",
     url=URL,
     packages=find_packages(exclude=["tests.*", "tests"]),
+    entry_points={
+        'console_scripts': [
+            'pydiscoursecli = pydiscourse.main:main'
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
