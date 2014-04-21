@@ -27,6 +27,7 @@ Command line
 
 To help experiment with the Discourse API, pydiscourse provides a simple command line client::
 
-    pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY latest_topics
-    pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY topics_by johnsmith
-    pydiscourse --host=http://yourhost --api-username=system --api-key=API_KEY user eviltrout
+    export DISCOURSE_API_KEY=your_master_key
+    pydiscoursecli --host=http://yourhost --api-username=system latest_topics
+    pydiscoursecli --host=http://yourhost --api-username=system topics_by johnsmith
+    pydiscoursecli --host=http://yourhost --api-username=system user eviltrout

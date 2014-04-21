@@ -35,15 +35,13 @@ class TestUser(ClientBaseTestCase):
         self.assertRequestCalled(request, 'GET', '/users/someuser.json')
 
     def test_create_user(self, request):
-        pass
+        self.client.create_user('Test User', 'testuser', 'test@example.com', 'notapassword')
+        self.assertEqual(request.call_count, 2)
+        # XXX incomplete
 
     def test_activate_user(self, request):
         self.client.activate_user(22)
         self.assertRequestCalled(request, 'PUT', '/admin/users/22/activate')
-
-    def test_activate_user_invalid_id(self, request):
-        with self.assertRaises(ValueError):
-            self.client.activate_user('notavaliduid')
 
     def test_update_email(self, request):
         email = 'test@example.com'
@@ -78,10 +76,6 @@ class TestTopics(ClientBaseTestCase):
         self.client.topic(22)
         self.assertRequestCalled(request, 'GET', '/t/22.json')
 
-    def test_topic_invalid(self, request):
-        with self.assertRaises(ValueError):
-            self.client.topic('notavalidtopicid')
-
     def test_topics_by(self, request):
         r = self.client.topics_by('someuser')
         self.assertRequestCalled(request, 'GET', '/topics/created-by/someuser.json')
@@ -91,10 +85,6 @@ class TestTopics(ClientBaseTestCase):
         email = 'test@example.com'
         self.client.invite_user_to_topic(email, 22)
         self.assertRequestCalled(request, 'POST', '/t/22/invite.json', email=email, topic_id=22)
-
-    def invite_user_to_topic_invalid_topic(self, request):
-        with self.assertRaises(ValueError):
-            self.client.invite_user_to_topic('someuser', 'invalidtopicid')
 
 
 @mock.patch('requests.request')

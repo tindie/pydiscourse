@@ -4,8 +4,9 @@ import json
 import optparse
 import pydoc
 import sys
+import os
 
-from pydiscourse.client import DiscourseClient
+from pydiscourse.client import DiscourseClient, HTTPError
 
 
 class DiscourseCmd(cmd.Cmd):
@@ -23,9 +24,15 @@ class DiscourseCmd(cmd.Cmd):
 
             def wrapper(arg):
                 args = arg.split()
-                return method(*args)
-
+                kwargs = dict(a.split('=') for a in args if '=' in a)
+                args = [a for a in args if '=' not in a]
+                try:
+                    return method(*args, **kwargs)
+                except HTTPError as e:
+                    print e, e.response.text
+                    return e.response
             return wrapper
+
         elif attr.startswith('help_'):
             method = getattr(self.client, attr[5:])
 
@@ -45,12 +52,12 @@ class DiscourseCmd(cmd.Cmd):
 
 def main():
     op = optparse.OptionParser()
-    op.add_option('--host', default='localhost')
+    op.add_option('--host', default='http://localhost:4000')
     op.add_option('--api-user', default='system')
-    op.add_option('--api-key')
 
+    api_key = os.environ['DISCOURSE_API_KEY']
     options, args = op.parse_args()
-    client = DiscourseClient(options.host, options.api_user, options.api_key)
+    client = DiscourseClient(options.host, options.api_user, api_key)
 
     c = DiscourseCmd(client)
     if args:
