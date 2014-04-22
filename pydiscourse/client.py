@@ -33,16 +33,15 @@ class DiscourseClient(object):
         return self.post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs )
 
-    def activate_user(self, user_id):
-        return self.put('/admin/users/{0}/activate'.format(user_id))
+    def activate_user(self, userid):
+        return self.put('/admin/users/{0}/activate'.format(userid))
 
-    def update_avatar(self, username, avatar):
-        """
-        avatar: URL pointing to the image for the users avatar
+    def update_avatar_from_url(self, username, url):
+        return self.post('/users/{0}/preferences/avatar'.format(username), file=url)
 
-        XXX should be able to pass in the bytes for an image but it doesn't seem to be working properly
-        """
-        return self.post('/users/{0}/preferences/avatar'.format(username), file=avatar)
+    def update_avatar_image(self, username, img):
+        files = {'file': img}
+        return self.post('/users/{0}/preferences/avatar'.format(username), files=files)
 
     def update_email(self, username, email):
         return self.put('/users/{0}/preferences/email'.format(username), email=email)
@@ -52,6 +51,20 @@ class DiscourseClient(object):
 
     def update_username(self, username, new_username):
         return self.put('/users/{0}/preferences/username'.format(username), username=new_username)
+
+    def generate_api_key(self, userid):
+        return self.post('/admin/users/{0}/generate_api_key').format(userid)
+
+    def delete_user(self, userid, **kwargs):
+        """
+            block_email='true'
+            block_ip='false'
+            block_urls='false'
+        """
+        return self.delete('/admin/users/{0}.json'.format(userid), **kwargs)
+
+    def unread_private_messages(self, username):
+        return self.get('/topics/private-messages-unread/{0}.json'.format(username))
 
     def hot_topics(self, **kwargs):
         return self.get('/hot.json', **kwargs)
