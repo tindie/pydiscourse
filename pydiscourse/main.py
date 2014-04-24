@@ -5,8 +5,9 @@ import optparse
 import pydoc
 import sys
 import os
+import logging
 
-from pydiscourse.client import DiscourseClient, HTTPError
+from pydiscourse.client import DiscourseClient, DiscourseError
 
 
 class DiscourseCmd(cmd.Cmd):
@@ -28,7 +29,7 @@ class DiscourseCmd(cmd.Cmd):
                 args = [a for a in args if '=' not in a]
                 try:
                     return method(*args, **kwargs)
-                except HTTPError as e:
+                except DiscourseError as e:
                     print e, e.response.text
                     return e.response
             return wrapper
@@ -54,10 +55,15 @@ def main():
     op = optparse.OptionParser()
     op.add_option('--host', default='http://localhost:4000')
     op.add_option('--api-user', default='system')
+    op.add_option('-v', '--verbose', action='store_true')
 
     api_key = os.environ['DISCOURSE_API_KEY']
     options, args = op.parse_args()
     client = DiscourseClient(options.host, options.api_user, api_key)
+
+    if options.verbose:
+        logging.basicConfig()
+        logging.getLogger().setLevel(logging.DEBUG)
 
     c = DiscourseCmd(client)
     if args:

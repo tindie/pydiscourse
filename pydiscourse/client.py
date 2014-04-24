@@ -3,14 +3,10 @@ import logging
 
 import requests
 
+from pydiscourse.exceptions import DiscourseError, DiscourseServerError, DiscourseClientError
+
 
 log = logging.getLogger('pydiscourse.client')
-
-HTTPError = requests.HTTPError
-
-
-class DiscourseAPIError(Exception):
-    pass
 
 
 class DiscourseClient(object):
@@ -24,7 +20,7 @@ class DiscourseClient(object):
     def user(self, username):
         return self.get('/users/{0}.json'.format(username))['user']
 
-    def create_user(self, name, username, email, password='', **kwargs):
+    def create_user(self, name, username, email, password, **kwargs):
         """ active='true', to avoid sending activation emails
         """
         r = self.get('/users/hp.json')
@@ -66,6 +62,9 @@ class DiscourseClient(object):
     def unread_private_messages(self, username):
         return self.get('/topics/private-messages-unread/{0}.json'.format(username))
 
+    def private_messages(self, username):
+        return self.get('/topics/private-messages/{0}.json'.format(username))
+
     def hot_topics(self, **kwargs):
         return self.get('/hot.json', **kwargs)
 
@@ -79,7 +78,9 @@ class DiscourseClient(object):
         return self.get('/t/{0}.json'.format(topic_id), **kwargs)
 
     def create_post(self, content, **kwargs):
-        return self.post('/posts', raw=content, archtype='regular', **kwargs)
+        """ int: topic_id the topic to reply too
+        """
+        return self.post('/posts', raw=content, **kwargs)
 
     def topics_by(self, username, **kwargs):
         url = '/topics/created-by/{0}.json'.format(username)
@@ -120,25 +121,33 @@ class DiscourseClient(object):
         params['api_key'] = self.api_key
         params['api_username'] = self.api_username
         url = self.host + path
-        response = requests.request(verb, url, params=params)
-        log.debug('response %s: %s', response.status_code, repr(response.text))
-        try:
-            response.raise_for_status()
-        except HTTPError:
-            if not response.reason:
-                try:
-                    response.reason = response.json()['errors']
-                except (ValueError, KeyError):
-                    response.reason = response.text
-                response.raise_for_status()
-            raise
 
-        # activate_user has no content in response, so no/u .json() for now
+        response = requests.request(verb, url, params=params)
+
+        log.debug('response %s: %s', response.status_code, repr(response.text))
+        if not response.ok:
+            msg = u'{0}: '.format(response.status_code)
+            if response.reason:
+                msg += response.reason
+            else:
+                try:
+                    msg += u','.join(response.json()['errors'])
+                except (ValueError, KeyError):
+                    msg += response.text
+            if 400 <= response.status_code < 500:
+                raise DiscourseClientError(msg, response=response)
+            else:
+                raise DiscourseServerError(msg, response=response)
+
+        # activate_user is one call that returns no content
         if not response.content or response.content == ' ':
             return None
 
         decoded = response.json()
         if 'errors' in decoded:
-            raise DiscourseAPIError(decoded['errors'])
+            message = decoded.get('message')
+            if not message:
+                message = u','.join(decoded['errors'])
+            raise DiscourseError(message, response=response)
 
         return decoded
