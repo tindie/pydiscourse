@@ -174,8 +174,6 @@ class DiscourseClient(object):
             raise DiscourseError('Invalid Response, expecting "{0}" got "{1}"'.format(
                                  json_content, content_type), response=response)
 
-
-
         try:
             decoded = response.json()
         except ValueError:
