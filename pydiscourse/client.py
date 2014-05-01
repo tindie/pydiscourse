@@ -81,6 +81,15 @@ class DiscourseClient(object):
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
 
+    def posts(self, topic_id, post_ids=None, **kwargs):
+        """ Get a set of posts from a topic
+
+        post_ids: a list of post ids from the topic stream
+        """
+        if post_ids:
+            kwargs['post_ids[]'] = post_ids
+        return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
+
     def topic_timings(self, topic_id, time, timings={}, **kwargs):
         """ Set time spent reading a post
 
