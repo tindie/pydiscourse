@@ -30,10 +30,10 @@ class DiscourseClient(object):
         challenge = r['challenge'][::-1]  # reverse challenge, discourse security check
         confirmations = r['value']
         return self._post('/users', name=name, username=username, email=email,
-                  password=password, password_confirmation=confirmations, challenge=challenge, **kwargs )
+                  password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
 
-    def activate_user(self, userid):
-        return self._put('/admin/users/{0}/activate'.format(userid))
+    def trust_level(self, userid, level):
+        return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
     def update_avatar_from_url(self, username, url):
         return self._post('/users/{0}/preferences/avatar'.format(username), file=url)
