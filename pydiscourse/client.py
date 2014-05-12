@@ -14,10 +14,11 @@ class DiscourseClient(object):
 
     This class will attempt to remain roughly similar to the discourse_api rails API
     """
-    def __init__(self, host, api_username, api_key):
+    def __init__(self, host, api_username, api_key, timeout=None):
         self.host = host
         self.api_username = api_username
         self.api_key = api_key
+        self.timeout = timeout
 
     def user(self, username):
         return self._get('/users/{0}.json'.format(username))['user']
@@ -150,10 +151,11 @@ class DiscourseClient(object):
 
     def _request(self, verb, path, params):
         params['api_key'] = self.api_key
-        params['api_username'] = self.api_username
+        if 'api_username' not in params:
+            params['api_username'] = self.api_username
         url = self.host + path
 
-        response = requests.request(verb, url, allow_redirects=False, params=params)
+        response = requests.request(verb, url, allow_redirects=False, params=params, timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
         if not response.ok:
@@ -167,8 +169,8 @@ class DiscourseClient(object):
 
             if 400 <= response.status_code < 500:
                 raise DiscourseClientError(msg, response=response)
-            else:
-                raise DiscourseServerError(msg, response=response)
+
+            raise DiscourseServerError(msg, response=response)
 
         if response.status_code == 302:
             raise DiscourseError('Unexpected Redirect, invalid api key or host?', response=response)
