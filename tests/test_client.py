@@ -45,11 +45,6 @@ class TestUser(ClientBaseTestCase):
         self.assertEqual(request.call_count, 2)
         # XXX incomplete
 
-    def test_activate_user(self, request):
-        prepare_response(request)
-        self.client.activate_user(22)
-        self.assertRequestCalled(request, 'PUT', '/admin/users/22/activate')
-
     def test_update_email(self, request):
         prepare_response(request)
         email = 'test@example.com'
