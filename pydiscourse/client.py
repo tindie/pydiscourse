@@ -35,24 +35,24 @@ class DiscourseClient(object):
     def trust_level(self, userid, level):
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
-    def update_avatar_from_url(self, username, url):
-        return self._post('/users/{0}/preferences/avatar'.format(username), file=url)
+    def update_avatar_from_url(self, username, url, **kwargs):
+        return self._post('/users/{0}/preferences/avatar'.format(username), file=url, **kwargs)
 
-    def update_avatar_image(self, username, img):
+    def update_avatar_image(self, username, img, **kwargs):
         files = {'file': img}
-        return self._post('/users/{0}/preferences/avatar'.format(username), files=files)
+        return self._post('/users/{0}/preferences/avatar'.format(username), files=files, **kwargs)
 
-    def update_email(self, username, email):
-        return self._put('/users/{0}/preferences/email'.format(username), email=email)
+    def update_email(self, username, email, **kwargs):
+        return self._put('/users/{0}/preferences/email'.format(username), email=email, **kwargs)
 
     def update_user(self, username, **kwargs):
         return self._put('/users/{0}'.format(username), **kwargs)
 
-    def update_username(self, username, new_username):
-        return self._put('/users/{0}/preferences/username'.format(username), username=new_username)
+    def update_username(self, username, new_username, **kwargs):
+        return self._put('/users/{0}/preferences/username'.format(username), username=new_username, **kwargs)
 
-    def generate_api_key(self, userid):
-        return self._post('/admin/users/{0}/generate_api_key').format(userid)
+    def generate_api_key(self, userid, **kwargs):
+        return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
 
     def delete_user(self, userid, **kwargs):
         """
@@ -62,10 +62,10 @@ class DiscourseClient(object):
         """
         return self._delete('/admin/users/{0}.json'.format(userid), **kwargs)
 
-    def private_messages(self, username=None):
+    def private_messages(self, username=None, **kwargs):
         if username is None:
             username = self.api_username
-        return self._get('/topics/private-messages/{0}.json'.format(username))
+        return self._get('/topics/private-messages/{0}.json'.format(username), **kwargs)
 
     def hot_topics(self, **kwargs):
         return self._get('/hot.json', **kwargs)
