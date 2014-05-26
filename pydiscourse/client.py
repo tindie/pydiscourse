@@ -42,6 +42,15 @@ class DiscourseClient(object):
         files = {'file': img}
         return self._post('/users/{0}/preferences/avatar'.format(username), files=files, **kwargs)
 
+    def toggle_gravatar(self, username, state=True, **kwargs):
+        url = '/users/{0}/preferences/avatar/toggle'.format(username)
+
+        if bool(state):
+            kwargs['use_uploaded_avatar'] = 'true'
+        else:
+            kwargs['use_uploaded_avatar'] = 'false'
+        return self._put(url, **kwargs)
+
     def update_email(self, username, email, **kwargs):
         return self._put('/users/{0}/preferences/email'.format(username), email=email, **kwargs)
 
