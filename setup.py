@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 def read(fname):
-    return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return codecs.open(os.path.join(os.path.dirname(__file__), fname), 'rt').read()
 
 
 # Provided as an attribute, so you can append to these instead
@@ -47,6 +47,8 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
     ],
     zip_safe=False,
 )
