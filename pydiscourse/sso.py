@@ -22,7 +22,11 @@ A SSO request handler might look something like
 import base64
 import hmac
 import hashlib
-import urllib
+
+try:  # py3
+    from urllib.parse import unquote, urlencode
+except ImportError:
+    from urllib import unquote, urlencode
 
 
 from pydiscourse.exceptions import DiscourseError
@@ -42,7 +46,7 @@ def sso_validate(payload, signature, secret):
     if not secret:
         raise DiscourseError('Invalid secret..')
 
-    payload = urllib.unquote(payload)
+    payload = unquote(payload)
     if not payload:
         raise DiscourseError('Invalid payload..')
 
@@ -78,8 +82,8 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
         'username': username
     })
 
-    return_payload = base64.encodestring(urllib.urlencode(kwargs))
+    return_payload = base64.encodestring(urlencode(kwargs))
     h = hmac.new(secret, return_payload, digestmod=hashlib.sha256)
-    query_string = urllib.urlencode({'sso': return_payload, 'sig': h.hexdigest()})
+    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
 
     return '/session/sso_login?%s' % query_string
