@@ -60,6 +60,12 @@ class DiscourseClient(object):
     def update_username(self, username, new_username, **kwargs):
         return self._put('/users/{0}/preferences/username'.format(username), username=new_username, **kwargs)
 
+    def set_preference(self, username=None, **kwargs):
+        if username is None:
+            username = self.api_username
+
+        return self._put(u'/users/{0}'.format(username), **kwargs)
+
     def generate_api_key(self, userid, **kwargs):
         return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
 
