@@ -144,8 +144,41 @@ class DiscourseClient(object):
         kwargs['term'] = term
         return self._get('/search.json', **kwargs)
 
+    def create_category(self, name, color, text_color='FFFFFF', permissions=None, parent=None, **kwargs):
+        """ permissions - dict of 'everyone', 'admins', 'moderators', 'staff' with values of
+        """
+
+        kwargs['name'] = name
+        kwargs['color'] = color
+        kwargs['text_color'] = text_color
+
+        if permissions is None and 'permissions' not in kwargs:
+            permissions = {'everyone': '1'}
+
+        for key, value in permissions.items():
+            kwargs['permissions[{0}]'.format(key)] = value
+
+        if parent:
+            parent_id = None
+            for category in self.categories():
+                if category['name'] == parent:
+                    parent_id = category['id']
+                    continue
+
+            if not parent_id:
+                raise DiscourseClientError(u'{0} not found'.format(parent))
+            kwargs['parent_category_id'] = parent_id
+
+        return self._post('/categories', **kwargs)
+
     def categories(self, **kwargs):
         return self._get('/categories.json', **kwargs)['category_list']['categories']
+
+    def category(self, name, parent=None, **kwargs):
+        if parent:
+            name = u'{0}/{1}'.format(parent, name)
+
+        return self._get(u'/category/{0}.json'.format(name), **kwargs)
 
     def site_settings(self, **kwargs):
         for setting, value in kwargs.items():
