@@ -1,6 +1,7 @@
 pydiscourse
 ------------
-A Python library for the Discourse API.
+A Python library for working with Discourse.
+
 Its pretty basic right now but you need to start somewhere.
 
 Examples
@@ -21,6 +22,16 @@ Get info about a user::
 Create a new user::
 
     user = client.create_user('The Black Knight', 'blacknight', 'knight@python.org', 'justafleshwound')
+
+Implement SSO for Discourse with your Python server::
+
+    @login_required
+    def discourse_sso_view(request):
+        payload = request.GET.get('sso')
+        signature = request.GET.get('sig')
+        nonce = sso_validate(payload, signature, SECRET)
+        url = sso_redirect_url(nonce, SECRET, request.user.email, request.user.id, request.user.username)
+        return redirect('http://discuss.example.com' + url)
 
 Command line
 ----------------

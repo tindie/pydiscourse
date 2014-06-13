@@ -12,11 +12,11 @@ A SSO request handler might look something like
         payload = request.GET.get('sso')
         signature = request.GET.get('sig')
         try:
-            nonce = sso_validate(payload, signature, secret)
+            nonce = sso_validate(payload, signature, SECRET)
         except DiscourseError as e:
             return HTTP400(e.args[0])
 
-        url = sso_redirect_url(nonce, secret, request.user.email, request.user.id, request.user.username)
+        url = sso_redirect_url(nonce, SECRET, request.user.email, request.user.id, request.user.username)
         return redirect('http://discuss.example.com' + url)
 """
 import base64
