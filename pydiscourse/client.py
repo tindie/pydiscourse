@@ -212,12 +212,12 @@ class DiscourseClient(object):
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
         if not response.ok:
-            if response.reason:
-                msg = response.reason
-            else:
-                try:
-                    msg = u','.join(response.json()['errors'])
-                except (ValueError, TypeError, KeyError):
+            try:
+                msg = u','.join(response.json()['errors'])
+            except (ValueError, TypeError, KeyError):
+                if response.reason:
+                    msg = response.reason
+                else:
                     msg = u'{0}: {1}'.format(response.status_code, response.text)
 
             if 400 <= response.status_code < 500:
