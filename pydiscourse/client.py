@@ -44,11 +44,14 @@ class DiscourseClient(object):
 
     def toggle_gravatar(self, username, state=True, **kwargs):
         url = '/users/{0}/preferences/avatar/toggle'.format(username)
-
         if bool(state):
             kwargs['use_uploaded_avatar'] = 'true'
         else:
             kwargs['use_uploaded_avatar'] = 'false'
+        return self._put(url, **kwargs)
+
+    def pick_avatar(self, username, gravatar=True, generated=False, **kwargs):
+        url = '/users/{0}/preferences/avatar/pick'.format(username)
         return self._put(url, **kwargs)
 
     def update_email(self, username, email, **kwargs):
@@ -91,8 +94,8 @@ class DiscourseClient(object):
     def new_topics(self, **kwargs):
         return self._get('/new.json', **kwargs)
 
-    def topic(self, topic_id, **kwargs):
-        return self._get('/t/{0}.json'.format(topic_id), **kwargs)
+    def topic(self, slug, topic_id, **kwargs):
+        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)

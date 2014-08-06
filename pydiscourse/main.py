@@ -57,8 +57,14 @@ def main():
     op.add_option('--api-user', default='system')
     op.add_option('-v', '--verbose', action='store_true')
 
-    api_key = os.environ['DISCOURSE_API_KEY']
     options, args = op.parse_args()
+    if not options.host.startswith('http'):
+        op.error('host must include protocol, eg http://')
+
+    api_key = os.environ.get('DISCOURSE_API_KEY')
+    if not api_key:
+        op.error('please set DISCOURSE_API_KEY')
+
     client = DiscourseClient(options.host, options.api_user, api_key)
 
     if options.verbose:
