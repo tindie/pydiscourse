@@ -134,7 +134,7 @@ class DiscourseClient(object):
 
     def update_post(self, post_id, content, edit_reason='', **kwargs):
         kwargs['post[raw]'] = content
-        kwargs['post[edit_reason'] = edit_reason
+        kwargs['post[edit_reason]'] = edit_reason
         return self._put('/posts/{0}'.format(post_id), **kwargs)
 
     def topics_by(self, username, **kwargs):
