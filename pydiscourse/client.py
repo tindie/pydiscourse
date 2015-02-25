@@ -35,6 +35,13 @@ class DiscourseClient(object):
     def trust_level(self, userid, level):
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
+    def suspend(self, userid, duration, reason):
+        return self._put('/admin/users/{0}/suspend'.format(userid), duration=duration, reason=reason)
+
+    def list_users(self, type, **kwargs):
+        """ optional user search: filter='test@example.com' or filter='scott' """
+        return self._get('/admin/users/list/{0}.json'.format(type), **kwargs)      
+
     def update_avatar_from_url(self, username, url, **kwargs):
         return self._post('/users/{0}/preferences/avatar'.format(username), file=url, **kwargs)
 
