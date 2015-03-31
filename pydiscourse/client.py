@@ -80,6 +80,12 @@ class DiscourseClient(object):
         """
         return self._delete('/admin/users/{0}.json'.format(userid), **kwargs)
 
+    def users(self, filter=None, **kwargs):
+        if filter is None:
+            filter = 'active'
+    
+        return self._get('/admin/users/list/{0}.json'.format(filter), **kwargs)
+
     def private_messages(self, username=None, **kwargs):
         if username is None:
             username = self.api_username

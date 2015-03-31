@@ -111,3 +111,8 @@ class MiscellaneousTests(ClientBaseTestCase):
         r = self.client.categories()
         self.assertRequestCalled(request, 'GET', '/categories.json')
         self.assertEqual(r, request().json()['category_list']['categories'])
+        
+    def test_users(self, request):
+        prepare_response(request)
+        r = self.client.users()
+        self.assertRequestCalled(request, 'GET', '/admin/users/list/active.json')
