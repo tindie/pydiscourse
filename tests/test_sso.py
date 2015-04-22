@@ -13,10 +13,8 @@ except ImportError:
     from urlparse import urlparse, parse_qs
     from urllib import unquote
 
-
 from pydiscourse import sso
 from pydiscourse.exceptions import DiscourseError
-
 
 class SSOTestCase(unittest.TestCase):
     def setUp(self):
@@ -69,9 +67,12 @@ class Test_sso_redirect_url(SSOTestCase):
         payload = unquote(payload)
         payload = dict((p.split('=') for p in payload.split('&')))
 
+        decoded = base64.decodestring(payload)
+        qs = parse_qs(decoded)
+
         self.assertEqual(payload, {
             'username': self.username,
-            'nonce': self.nonce,
+            'nonce': qs['nonce'][0],
             'external_id': self.external_id,
             'name': self.name,
             'email': self.email
