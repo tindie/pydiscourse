@@ -82,8 +82,8 @@ class TestTopics(ClientBaseTestCase):
 
     def test_topic(self, request):
         prepare_response(request)
-        self.client.topic(22)
-        self.assertRequestCalled(request, 'GET', '/t/22.json')
+        self.client.topic('some-test-slug', 22)
+        self.assertRequestCalled(request, 'GET', '/t/some-test-slug/22.json')
 
     def test_topics_by(self, request):
         prepare_response(request)
