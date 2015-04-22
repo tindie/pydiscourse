@@ -13,8 +13,10 @@ except ImportError:
     from urlparse import urlparse, parse_qs
     from urllib import unquote
 
+
 from pydiscourse import sso
 from pydiscourse.exceptions import DiscourseError
+
 
 class SSOTestCase(unittest.TestCase):
     def setUp(self):
@@ -67,6 +69,8 @@ class Test_sso_redirect_url(SSOTestCase):
         payload = unquote(payload)
         payload = dict((p.split('=') for p in payload.split('&')))
 
+        # updated as per https://meta.discourse.org/t/sso-example-for-django/14258/2
+        # to be compliant with Discourse versions 1.2+
         decoded = base64.decodestring(payload)
         qs = parse_qs(decoded)
 
