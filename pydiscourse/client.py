@@ -90,13 +90,18 @@ class DiscourseClient(object):
     def users(self, filter=None, **kwargs):
         if filter is None:
             filter = 'active'
-    
+
         return self._get('/admin/users/list/{0}.json'.format(filter), **kwargs)
 
     def private_messages(self, username=None, **kwargs):
         if username is None:
             username = self.api_username
         return self._get('/topics/private-messages/{0}.json'.format(username), **kwargs)
+
+    def private_messages_unread(self, username=None, **kwargs):
+        if username is None:
+            username = self.api_username
+        return self._get('/topics/private-messages-unread/{0}.json'.format(username), **kwargs)
 
     def hot_topics(self, **kwargs):
         return self._get('/hot.json', **kwargs)
