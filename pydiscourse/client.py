@@ -159,6 +159,28 @@ class DiscourseClient(object):
         url = '/topics/created-by/{0}.json'.format(username)
         return self._get(url, **kwargs)['topic_list']['topics']
 
+    # filter options
+    # LIKE                = 1
+    # WAS_LIKED           = 2
+    # BOOKMARK            = 3
+    # NEW_TOPIC           = 4
+    # REPLY               = 5
+    # RESPONSE            = 6
+    # MENTION             = 7
+    # QUOTE               = 9
+    # EDIT                = 11
+    # NEW_PRIVATE_MESSAGE = 12
+    # GOT_PRIVATE_MESSAGE = 13
+    # PENDING             = 14
+    def user_actions(self, username, filter=None, offset=None, **kwargs):
+        url = '/user_actions.json'
+        kwargs['username'] = username
+        if filter:
+            kwargs['filter'] = filter
+        if offset:
+            kwargs['offset'] = offset
+        return self._get(url, **kwargs)['user_actions']
+
     def invite_user_to_topic(self, user_email, topic_id):
         kwargs = {
             'email': user_email,
