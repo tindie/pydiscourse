@@ -113,7 +113,10 @@ class DiscourseClient(object):
         return self._get('/new.json', **kwargs)
 
     def topic(self, slug, topic_id, **kwargs):
-        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+        if slug:
+            return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+        else:
+            return self._get('/t/{0}.json'.format(topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
