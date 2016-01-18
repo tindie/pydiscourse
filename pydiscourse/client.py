@@ -32,6 +32,9 @@ class DiscourseClient(object):
         return self._post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
 
+    def log_out(self, userid):
+        return self._post('/admin/users/{0}/log_out'.format(userid))
+
     def trust_level(self, userid, level):
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
