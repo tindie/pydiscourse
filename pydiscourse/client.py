@@ -32,6 +32,10 @@ class DiscourseClient(object):
         return self._post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
 
+    def by_external_id(self, external_id):
+        response = self._get("/users/by-external/{0}".format(external_id))
+        return response['user']
+
     def log_out(self, userid):
         return self._post('/admin/users/{0}/log_out'.format(userid))
 
