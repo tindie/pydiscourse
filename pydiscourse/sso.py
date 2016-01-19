@@ -19,7 +19,7 @@ A SSO request handler might look something like
         url = sso_redirect_url(nonce, SECRET, request.user.email, request.user.id, request.user.username)
         return redirect('http://discuss.example.com' + url)
 """
-import base64
+from base64 import b64encode, b64decode
 import hmac
 import hashlib
 
@@ -50,11 +50,11 @@ def sso_validate(payload, signature, secret):
     if not payload:
         raise DiscourseError('Invalid payload..')
 
-    decoded = base64.decodestring(payload)
+    decoded = b64decode(payload.encode('utf-8')).decode('utf-8')
     if 'nonce' not in decoded:
         raise DiscourseError('Invalid payload..')
 
-    h = hmac.new(secret, payload, digestmod=hashlib.sha256)
+    h = hmac.new(secret.encode('utf-8'), payload.encode('utf-8'), digestmod=hashlib.sha256)
     this_signature = h.hexdigest()
 
     if this_signature != signature:
@@ -82,8 +82,8 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
         'username': username
     })
 
-    return_payload = base64.encodestring(urlencode(kwargs))
-    h = hmac.new(secret, return_payload, digestmod=hashlib.sha256)
+    return_payload = b64encode(urlencode(kwargs).encode('utf-8'))
+    h = hmac.new(secret.encode('utf-8'), return_payload, digestmod=hashlib.sha256)
     query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
 
     return '/session/sso_login?%s' % query_string
