@@ -32,6 +32,10 @@ class DiscourseClient(object):
         return self._post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
 
+    def by_external_id(self, external_id):
+        response = self._get("/users/by-external/{0}".format(external_id))
+        return response['user']
+
     def trust_level(self, userid, level):
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
@@ -229,7 +233,11 @@ class DiscourseClient(object):
             params['api_username'] = self.api_username
         url = self.host + path
 
-        response = requests.request(verb, url, allow_redirects=False, params=params, timeout=self.timeout)
+        headers = {'Accept': 'application/json; charset=utf-8'}
+
+        response = requests.request(
+            verb, url, allow_redirects=False, params=params, headers=headers,
+            timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
         if not response.ok:
