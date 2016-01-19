@@ -1,4 +1,4 @@
-import base64
+from base64 import b64decode
 
 try:  # py26
     import unittest2 as unittest
@@ -65,7 +65,7 @@ class Test_sso_redirect_url(SSOTestCase):
         sso.sso_validate(payload, params['sig'][0], self.secret)
 
         # check the params have all the data we expect
-        payload = base64.decodestring(payload)
+        payload = b64decode(payload.encode('utf-8')).decode('utf-8')
         payload = unquote(payload)
         payload = dict((p.split('=') for p in payload.split('&')))
 
