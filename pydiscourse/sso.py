@@ -65,6 +65,13 @@ def sso_validate(payload, signature, secret):
     return nonce
 
 
+def sso_payload(secret, **kwargs):
+    return_payload = b64encode(urlencode(kwargs).encode('utf-8'))
+    h = hmac.new(secret.encode('utf-8'), return_payload, digestmod=hashlib.sha256)
+    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
+    return query_string
+
+
 def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
     """
         nonce: returned by sso_validate()
@@ -82,8 +89,4 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
         'username': username
     })
 
-    return_payload = b64encode(urlencode(kwargs).encode('utf-8'))
-    h = hmac.new(secret.encode('utf-8'), return_payload, digestmod=hashlib.sha256)
-    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
-
-    return '/session/sso_login?%s' % query_string
+    return '/session/sso_login?%s' % sso_payload(secret, **kwargs)
