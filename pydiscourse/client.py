@@ -4,6 +4,7 @@ import logging
 import requests
 
 from pydiscourse.exceptions import DiscourseError, DiscourseServerError, DiscourseClientError
+from pydiscourse.sso import sso_payload
 
 
 log = logging.getLogger('pydiscourse.client')
@@ -80,8 +81,13 @@ class DiscourseClient(object):
     def set_preference(self, username=None, **kwargs):
         if username is None:
             username = self.api_username
-
         return self._put(u'/users/{0}'.format(username), **kwargs)
+
+    def sync_sso(self, **kwargs):
+        # expect sso_secret, name, username, email, external_id, avatar_url, avatar_force_update
+        sso_secret = kwargs.pop('sso_secret')
+        payload = sso_payload(sso_secret, **kwargs)
+        return self._post('/admin/users/sync_sso?{0}'.format(payload), **kwargs)
 
     def generate_api_key(self, userid, **kwargs):
         return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
