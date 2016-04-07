@@ -1,37 +1,23 @@
-
 from setuptools import setup, find_packages
 
 
 README = open('README.rst').read()
-
-
-# Provided as an attribute, so you can append to these instead
-# of replicating them:
-standard_exclude = ["*.py", "*.pyc", "*$py.class", "*~", ".*", "*.bak"]
-standard_exclude_directories = [
-    ".*", "CVS", "_darcs", "./build", "./dist", "EGG-INFO", "*.egg-info"
-]
-
-
-NAME = "pydiscourse"
-DESCRIPTION = "A Python library for the Discourse API"
-AUTHOR = "Marc Sibson"
-AUTHOR_EMAIL = "sibson@gmail.com"
-URL = "https://github.com/tindie/pydiscourse"
-PACKAGE = "pydiscourse"
-VERSION = __import__(PACKAGE).__version__
+VERSION = __import__("pydiscourse").__version__
 
 
 setup(
-    name=NAME,
+    name="pydiscourse",
     version=VERSION,
-    description=DESCRIPTION,
+    description="A Python library for the Discourse API",
     long_description=README,
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
+    author="Marc Sibson and contributors",
+    author_email="ben+pydiscourse@benlopatin.com",
     license="BSD",
-    url=URL,
+    url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
+    install_requires=['requests>=2.0.0'],
+    tests_require=['mock'],
+    test_suite='tests',
     entry_points={
         'console_scripts': [
             'pydiscoursecli = pydiscourse.main:main'
@@ -46,6 +32,8 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        'Programming Language :: Python :: Implementation :: PyPy',
     ],
     zip_safe=False,
 )

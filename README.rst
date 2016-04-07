@@ -4,7 +4,16 @@ pydiscourse
 
 A Python library for working with Discourse.
 
-Its pretty basic right now but you need to start somewhere.
+This is a fork of the original Tindie version. It was forked to include fixes,
+additional functionality, and to distribute a package on PyPI.
+
+Goals
+=====
+
+* Provide functional parity with the Discourse API, for the currently supported
+  version of Discourse (something of a moving target)
+* Support all supported Python versions
+* Document API
 
 Examples
 ========

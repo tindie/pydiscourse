@@ -11,4 +11,4 @@ install:
 - "pip install -r requirements.dev.txt"
 - "pip install ."
 
-script: nosetests
+script: python setup.py test
