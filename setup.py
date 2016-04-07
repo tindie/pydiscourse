@@ -1,11 +1,8 @@
-import codecs
-import os
 
 from setuptools import setup, find_packages
 
 
-def read(fname):
-    return codecs.open(os.path.join(os.path.dirname(__file__), fname), 'rt').read()
+README = open('README.rst').read()
 
 
 # Provided as an attribute, so you can append to these instead
@@ -29,7 +26,7 @@ setup(
     name=NAME,
     version=VERSION,
     description=DESCRIPTION,
-    long_description=DESCRIPTION,
+    long_description=README,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license="BSD",
