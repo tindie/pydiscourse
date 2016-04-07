@@ -2,6 +2,10 @@
 pydiscourse
 ===========
 
+.. image:: https://secure.travis-ci.org/bennylope/pydiscourse.svg?branch=master
+    :alt: Build Status
+    :target: http://travis-ci.org/bennylope/pydiscourse
+
 A Python library for working with Discourse.
 
 This is a fork of the original Tindie version. It was forked to include fixes,
