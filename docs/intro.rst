@@ -1,4 +1,5 @@
 Introduction
 ==============
-.. include:: ../README.md
-    :start-line: 2
+
+.. include:: ../README.rst
+    :start-line: 3
