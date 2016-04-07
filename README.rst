@@ -1,15 +1,21 @@
+===========
 pydiscourse
-------------
+===========
+
 A Python library for working with Discourse.
 
 Its pretty basic right now but you need to start somewhere.
 
 Examples
------------
+========
+
 Create a client connection to a Discourse server::
 
     from pydiscourse.client import DiscourseClient
-    client = DiscourseClient('http://example.com', api_username='username', api_key='areallylongstringfromdiscourse')
+    client = DiscourseClient(
+            'http://example.com',
+            api_username='username',
+            api_key='areallylongstringfromdiscourse')
 
 Get info about a user::
 
@@ -34,11 +40,11 @@ Implement SSO for Discourse with your Python server::
         return redirect('http://discuss.example.com' + url)
 
 Command line
-----------------
+============
 
 To help experiment with the Discourse API, pydiscourse provides a simple command line client::
 
     export DISCOURSE_API_KEY=your_master_key
-    pydiscoursecli --host=http://yourhost --api-user=system latest_topics
-    pydiscoursecli --host=http://yourhost --api-user=system topics_by johnsmith
-    pydiscoursecli --host=http://yourhost --api-user=system user eviltrout
+    pydiscoursecli --host-http://yourhost --api-user-system latest_topics
+    pydiscoursecli --host-http://yourhost --api-user-system topics_by johnsmith
+    pydiscoursecli --host-http://yourhost --api-user-system user eviltrout
