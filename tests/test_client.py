@@ -10,6 +10,10 @@ def prepare_response(request):
 
 
 class ClientBaseTestCase(unittest.TestCase):
+    """
+
+    """
+
     def setUp(self):
         self.host = 'testhost'
         self.api_username = 'testuser'
@@ -59,7 +63,14 @@ class TestUser(ClientBaseTestCase):
     def test_update_username(self, request):
         prepare_response(request)
         self.client.update_username('someuser', 'newname')
-        self.assertRequestCalled(request, 'PUT', '/users/someuser/preferences/username', username='newname')
+        self.assertRequestCalled(request, 'PUT',
+                                 '/users/someuser/preferences/username', username='newname')
+
+    def test_by_external_id(self, request):
+        prepare_response(request)
+        self.client.by_external_id(123)
+        self.assertRequestCalled(request, 'GET',
+                                 '/users/by-external/123')
 
 
 @mock.patch('requests.request')
@@ -111,8 +122,8 @@ class MiscellaneousTests(ClientBaseTestCase):
         r = self.client.categories()
         self.assertRequestCalled(request, 'GET', '/categories.json')
         self.assertEqual(r, request().json()['category_list']['categories'])
-        
+
     def test_users(self, request):
         prepare_response(request)
-        r = self.client.users()
+        self.client.users()
         self.assertRequestCalled(request, 'GET', '/admin/users/list/active.json')

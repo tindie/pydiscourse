@@ -33,9 +33,10 @@ class DiscourseClient(object):
         return self._post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
 
-    def by_external_id(self, external_id):
+    def user_by_external_id(self, external_id):
         response = self._get("/users/by-external/{0}".format(external_id))
         return response['user']
+    by_external_id = user_by_external_id
 
     def log_out(self, userid):
         return self._post('/admin/users/{0}/log_out'.format(userid))
@@ -48,7 +49,7 @@ class DiscourseClient(object):
 
     def list_users(self, type, **kwargs):
         """ optional user search: filter='test@example.com' or filter='scott' """
-        return self._get('/admin/users/list/{0}.json'.format(type), **kwargs)      
+        return self._get('/admin/users/list/{0}.json'.format(type), **kwargs)
 
     def update_avatar_from_url(self, username, url, **kwargs):
         return self._post('/users/{0}/preferences/avatar'.format(username), file=url, **kwargs)
