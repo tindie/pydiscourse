@@ -2,11 +2,11 @@
 
 import cmd
 import json
+import logging
 import optparse
+import os
 import pydoc
 import sys
-import os
-import logging
 
 from pydiscourse.client import DiscourseClient, DiscourseError
 
