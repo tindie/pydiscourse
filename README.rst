@@ -14,10 +14,20 @@ additional functionality, and to distribute a package on PyPI.
 Goals
 =====
 
+* Exceptional documentation
+* Support all supported Python versions
 * Provide functional parity with the Discourse API, for the currently supported
   version of Discourse (something of a moving target)
-* Support all supported Python versions
-* Document API
+
+The order here is important. The Discourse API is itself poorly documented so
+the level of documentation in the Python client is critical.
+
+Installation
+============
+
+::
+
+    pip install pydiscourse
 
 Examples
 ========
