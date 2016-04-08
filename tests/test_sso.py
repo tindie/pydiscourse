@@ -32,8 +32,6 @@ class SSOTestCase(unittest.TestCase):
         self.email = u'test@test.com'
         self.redirect_url = u'/session/sso_login?sso=bm9uY2U9Y2I2ODI1MWVlZmI1MjExZTU4YzAwZmYxMzk1ZjBjMGImbmFtZT1z%0AYW0mdXNlcm5hbWU9c2Ftc2FtJmVtYWlsPXRlc3QlNDB0ZXN0LmNvbSZleHRl%0Acm5hbF9pZD1oZWxsbzEyMw%3D%3D%0A&sig=1c884222282f3feacd76802a9dd94e8bc8deba5d619b292bed75d63eb3152c0b'
 
-
-class Test_sso_validate(SSOTestCase):
     def test_missing_args(self):
         with self.assertRaises(DiscourseError):
             sso.sso_validate(None, self.signature, self.secret)
@@ -52,8 +50,6 @@ class Test_sso_validate(SSOTestCase):
         nonce = sso.sso_validate(self.payload, self.signature, self.secret)
         self.assertEqual(nonce, self.nonce)
 
-
-class Test_sso_redirect_url(SSOTestCase):
     def test_valid_redirect_url(self):
         url = sso.sso_redirect_url(self.nonce, self.secret, self.email, self.external_id, self.username, name='sam')
 
