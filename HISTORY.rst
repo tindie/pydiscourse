@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.3.0
+=====
+
+* Added method to unsuspend suspended user
+
 0.2.0
 =====
 
