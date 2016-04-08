@@ -1,7 +1,18 @@
+import sys
 import unittest
 import mock
+import requests
 
 from pydiscourse import client
+
+import sys
+if sys.version_info < (3,):
+    def b(x):
+        return x
+else:
+    import codecs
+    def b(x):
+        return codecs.latin_1_encode(x)[0]
 
 
 def prepare_response(request):
@@ -15,7 +26,7 @@ class ClientBaseTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        self.host = 'testhost'
+        self.host = 'http://testhost'
         self.api_username = 'testuser'
         self.api_key = 'testkey'
 
@@ -33,6 +44,32 @@ class ClientBaseTestCase(unittest.TestCase):
         self.assertEqual(kwargs.pop('api_username'), self.api_username)
         self.assertEqual(kwargs.pop('api_key'), self.api_key)
         self.assertEqual(kwargs, params)
+
+
+
+class TestClientRequests(ClientBaseTestCase):
+    """
+    Tests for common request handling
+    """
+
+    @mock.patch('pydiscourse.client.requests')
+    def test_empty_content_http_ok(self, mocked_requests):
+        """Empty content should not raise error
+
+        Critical to test against *bytestrings* rather than unicode
+        """
+        mocked_response = mock.MagicMock()
+        mocked_response.content = b(' ')
+        mocked_response.status_code = 200
+        mocked_response.headers = {"content-type": "text/plain; charset=utf-8"}
+
+        assert "content-type" in mocked_response.headers
+
+        mocked_requests.request = mock.MagicMock()
+        mocked_requests.request.return_value = mocked_response
+
+        resp = self.client._request('GET', '/users/admin/1/unsuspend', {})
+        self.assertIsNone(resp)
 
 
 @mock.patch('requests.request')

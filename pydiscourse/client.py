@@ -706,7 +706,7 @@ class DiscourseClient(object):
         content_type = response.headers['content-type']
         if content_type != json_content:
             # some calls return empty html documents
-            if response.content == ' ':
+            if not response.content.strip():
                 return None
 
             raise DiscourseError('Invalid Response, expecting "{0}" got "{1}"'.format(
