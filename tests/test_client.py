@@ -81,7 +81,7 @@ class TestUser(ClientBaseTestCase):
 
     def test_unsuspend_user(self, request):
         prepare_response(request)
-        self.client.unsuspend(123, 1, "Testing")
+        self.client.unsuspend(123)
         self.assertRequestCalled(request, 'PUT', '/admin/users/123/unsuspend')
 
 
