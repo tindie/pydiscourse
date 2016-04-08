@@ -24,7 +24,7 @@ Examples
 
 Create a client connection to a Discourse server::
 
-    from pydiscourse.client import DiscourseClient
+    from pydiscourse import DiscourseClient
     client = DiscourseClient(
             'http://example.com',
             api_username='username',

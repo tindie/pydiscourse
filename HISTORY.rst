@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.3.1
+=====
+
+* Fix how empty responses are handled
+
 0.3.0
 =====
 
