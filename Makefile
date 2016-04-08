@@ -46,9 +46,14 @@ dist: clean  ## Creates new source and wheel distributions (cleans first)
 	python setup.py bdist_wheel
 	ls -l dist
 
-docs:  ## Builds and open docs
+api-docs:  ## Build autodocs from docstrings
+	sphinx-apidoc -f -o docs pydiscourse
+
+manual-docs:  ## Build written docs
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+docs:  api-docs manual-docs ## Builds and open docs
 	open docs/_build/html/index.html
 
 help:
