@@ -31,7 +31,7 @@ class DiscourseCmd(cmd.Cmd):
                 try:
                     return method(*args, **kwargs)
                 except DiscourseError as e:
-                    print (e, e.response.text)
+                    print(e, e.response.text)
                     return e.response
             return wrapper
 

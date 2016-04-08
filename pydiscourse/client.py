@@ -127,7 +127,8 @@ class DiscourseClient(object):
             ????
 
         """
-        return self._put('/admin/users/{0}/suspend'.format(userid), duration=duration, reason=reason)
+        return self._put('/admin/users/{0}/suspend'.format(userid),
+                         duration=duration, reason=reason)
 
     def unsuspend(self, userid):
         """
@@ -251,7 +252,8 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/users/{0}/preferences/username'.format(username), username=new_username, **kwargs)
+        return self._put('/users/{0}/preferences/username'.format(username),
+                         username=new_username, **kwargs)
 
     def set_preference(self, username=None, **kwargs):
         """
@@ -270,13 +272,15 @@ class DiscourseClient(object):
     def sync_sso(self, **kwargs):
         """
 
+        expect sso_secret, name, username, email, external_id, avatar_url,
+        avatar_force_update
+
         Args:
             **kwargs:
 
         Returns:
 
         """
-        # expect sso_secret, name, username, email, external_id, avatar_url, avatar_force_update
         sso_secret = kwargs.pop('sso_secret')
         payload = sso_payload(sso_secret, **kwargs)
         return self._post('/admin/users/sync_sso?{0}'.format(payload), **kwargs)
@@ -531,7 +535,8 @@ class DiscourseClient(object):
         kwargs['term'] = term
         return self._get('/search.json', **kwargs)
 
-    def create_category(self, name, color, text_color='FFFFFF', permissions=None, parent=None, **kwargs):
+    def create_category(self, name, color, text_color='FFFFFF',
+                        permissions=None, parent=None, **kwargs):
         """
 
         Args:
@@ -694,7 +699,8 @@ class DiscourseClient(object):
             raise DiscourseServerError(msg, response=response)
 
         if response.status_code == 302:
-            raise DiscourseError('Unexpected Redirect, invalid api key or host?', response=response)
+            raise DiscourseError(
+                'Unexpected Redirect, invalid api key or host?', response=response)
 
         json_content = 'application/json; charset=utf-8'
         content_type = response.headers['content-type']
