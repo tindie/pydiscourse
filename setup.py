@@ -16,7 +16,10 @@ setup(
     url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
     install_requires=['requests>=2.0.0'],
-    tests_require=['mock'],
+    tests_require=[
+        'mock',
+        'requests>=2.0.0',
+    ],
     test_suite='tests',
     entry_points={
         'console_scripts': [
