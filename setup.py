@@ -2,7 +2,12 @@ from setuptools import setup, find_packages
 
 
 README = open('README.rst').read()
-VERSION = __import__("pydiscourse").__version__
+
+with open("pydiscourse/__init__.py", "r") as module_file:
+    for line in module_file:
+        if line.startswith("__version__"):
+            version_string = line.split("=")[1]
+            VERSION = version_string.strip().replace("'", "")
 
 
 setup(
@@ -15,10 +20,11 @@ setup(
     license="BSD",
     url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
-    install_requires=['requests>=2.0.0'],
+    install_requires=[
+        'requests>=2.0.0',
+    ],
     tests_require=[
         'mock',
-        'requests>=2.0.0',
     ],
     test_suite='tests',
     entry_points={

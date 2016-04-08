@@ -1,7 +1,6 @@
 import sys
 import unittest
 import mock
-import requests
 
 from pydiscourse import client
 
