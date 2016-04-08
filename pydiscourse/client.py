@@ -115,16 +115,31 @@ class DiscourseClient(object):
 
     def suspend(self, userid, duration, reason):
         """
+        Suspend a user's account
 
         Args:
-            userid:
-            duration:
-            reason:
+            userid: the Discourse user ID
+            duration: the length of time in days for which a user's account
+                    should be suspended
+            reason: the reason for suspending the account
 
         Returns:
+            ????
 
         """
         return self._put('/admin/users/{0}/suspend'.format(userid), duration=duration, reason=reason)
+
+    def unsuspend(self, userid):
+        """
+        Unsuspends a user's account
+
+        Args:
+            userid: the Discourse user ID
+
+        Returns:
+            None???
+        """
+        return self._put('/admin/users/{0}/unsuspend'.format(userid))
 
     def list_users(self, type, **kwargs):
         """

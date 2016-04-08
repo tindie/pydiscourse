@@ -64,13 +64,25 @@ class TestUser(ClientBaseTestCase):
         prepare_response(request)
         self.client.update_username('someuser', 'newname')
         self.assertRequestCalled(request, 'PUT',
-                                 '/users/someuser/preferences/username', username='newname')
+                                 '/users/someuser/preferences/username',
+                                 username='newname')
 
     def test_by_external_id(self, request):
         prepare_response(request)
         self.client.by_external_id(123)
         self.assertRequestCalled(request, 'GET',
                                  '/users/by-external/123')
+
+    def test_suspend_user(self, request):
+        prepare_response(request)
+        self.client.suspend(123, 1, "Testing")
+        self.assertRequestCalled(request, 'PUT', '/admin/users/123/suspend',
+                                 duration=1, reason="Testing")
+
+    def test_unsuspend_user(self, request):
+        prepare_response(request)
+        self.client.unsuspend(123, 1, "Testing")
+        self.assertRequestCalled(request, 'PUT', '/admin/users/123/unsuspend')
 
 
 @mock.patch('requests.request')
