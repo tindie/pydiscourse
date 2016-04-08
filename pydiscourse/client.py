@@ -1,9 +1,13 @@
-#!/usr/bin/env python
+"""
+Core API client module
+"""
+
 import logging
 
 import requests
 
-from pydiscourse.exceptions import DiscourseError, DiscourseServerError, DiscourseClientError
+from pydiscourse.exceptions import (
+    DiscourseError, DiscourseServerError, DiscourseClientError)
 from pydiscourse.sso import sso_payload
 
 
@@ -11,54 +15,169 @@ log = logging.getLogger('pydiscourse.client')
 
 
 class DiscourseClient(object):
-    """ A basic client for the Discourse API that implements the raw API
+    """Discourse API client"""
 
-    This class will attempt to remain roughly similar to the discourse_api rails API
-    """
     def __init__(self, host, api_username, api_key, timeout=None):
+        """
+        Initialize the client
+
+        Args:
+            host: full domain name including scheme for the Discourse API
+            api_username: username to connect with
+            api_key: API key to connect with
+            timeout: optional timeout for the request (in seconds)
+
+        Returns:
+
+        """
         self.host = host
         self.api_username = api_username
         self.api_key = api_key
         self.timeout = timeout
 
     def user(self, username):
+        """
+        Get user information for a specific user
+
+        TODO: include sample data returned
+        TODO: what happens when no user is found?
+
+        Args:
+            username: username to return
+
+        Returns:
+            dict of user information
+
+        """
         return self._get('/users/{0}.json'.format(username))['user']
 
     def create_user(self, name, username, email, password, **kwargs):
-        """ active='true', to avoid sending activation emails
+        """
+        Create a Discourse user
+
+        Set keyword argument active='true' to avoid sending activation emails
+
+        TODO: allow optional password and generate a random one
+
+        Args:
+            name: the full name of the new user
+            username: their username (this is a key... that they can change)
+            email: their email, will be used for activation and summary emails
+            password: their initial password
+            **kwargs: ???? what else can be sent through?
+
+        Returns:
+            ????
+
         """
         r = self._get('/users/hp.json')
         challenge = r['challenge'][::-1]  # reverse challenge, discourse security check
         confirmations = r['value']
         return self._post('/users', name=name, username=username, email=email,
-                  password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
+                          password=password, password_confirmation=confirmations,
+                          challenge=challenge, **kwargs)
 
     def user_by_external_id(self, external_id):
+        """
+
+        Args:
+            external_id:
+
+        Returns:
+
+        """
         response = self._get("/users/by-external/{0}".format(external_id))
         return response['user']
     by_external_id = user_by_external_id
 
     def log_out(self, userid):
+        """
+
+        Args:
+            userid:
+
+        Returns:
+
+        """
         return self._post('/admin/users/{0}/log_out'.format(userid))
 
     def trust_level(self, userid, level):
+        """
+
+        Args:
+            userid:
+            level:
+
+        Returns:
+
+        """
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
 
     def suspend(self, userid, duration, reason):
+        """
+
+        Args:
+            userid:
+            duration:
+            reason:
+
+        Returns:
+
+        """
         return self._put('/admin/users/{0}/suspend'.format(userid), duration=duration, reason=reason)
 
     def list_users(self, type, **kwargs):
-        """ optional user search: filter='test@example.com' or filter='scott' """
+        """
+
+        optional user search: filter='test@example.com' or filter='scott'
+
+        Args:
+            type:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/admin/users/list/{0}.json'.format(type), **kwargs)
 
     def update_avatar_from_url(self, username, url, **kwargs):
+        """
+
+        Args:
+            username:
+            url:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._post('/users/{0}/preferences/avatar'.format(username), file=url, **kwargs)
 
     def update_avatar_image(self, username, img, **kwargs):
+        """
+
+        Args:
+            username:
+            img:
+            **kwargs:
+
+        Returns:
+
+        """
         files = {'file': img}
         return self._post('/users/{0}/preferences/avatar'.format(username), files=files, **kwargs)
 
     def toggle_gravatar(self, username, state=True, **kwargs):
+        """
+
+        Args:
+            username:
+            state:
+            **kwargs:
+
+        Returns:
+
+        """
         url = '/users/{0}/preferences/avatar/toggle'.format(username)
         if bool(state):
             kwargs['use_uploaded_avatar'] = 'true'
@@ -67,87 +186,246 @@ class DiscourseClient(object):
         return self._put(url, **kwargs)
 
     def pick_avatar(self, username, gravatar=True, generated=False, **kwargs):
+        """
+
+        Args:
+            username:
+            gravatar:
+            generated:
+            **kwargs:
+
+        Returns:
+
+        """
         url = '/users/{0}/preferences/avatar/pick'.format(username)
         return self._put(url, **kwargs)
 
     def update_email(self, username, email, **kwargs):
+        """
+
+        Args:
+            username:
+            email:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._put('/users/{0}/preferences/email'.format(username), email=email, **kwargs)
 
     def update_user(self, username, **kwargs):
+        """
+
+        Args:
+            username:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._put('/users/{0}'.format(username), **kwargs)
 
     def update_username(self, username, new_username, **kwargs):
+        """
+
+        Args:
+            username:
+            new_username:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._put('/users/{0}/preferences/username'.format(username), username=new_username, **kwargs)
 
     def set_preference(self, username=None, **kwargs):
+        """
+
+        Args:
+            username:
+            **kwargs:
+
+        Returns:
+
+        """
         if username is None:
             username = self.api_username
         return self._put(u'/users/{0}'.format(username), **kwargs)
 
     def sync_sso(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         # expect sso_secret, name, username, email, external_id, avatar_url, avatar_force_update
         sso_secret = kwargs.pop('sso_secret')
         payload = sso_payload(sso_secret, **kwargs)
         return self._post('/admin/users/sync_sso?{0}'.format(payload), **kwargs)
 
     def generate_api_key(self, userid, **kwargs):
+        """
+
+        Args:
+            userid:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
 
     def delete_user(self, userid, **kwargs):
         """
+
             block_email='true'
             block_ip='false'
             block_urls='false'
+
+        Args:
+            userid:
+            **kwargs:
+
+        Returns:
+
         """
         return self._delete('/admin/users/{0}.json'.format(userid), **kwargs)
 
     def users(self, filter=None, **kwargs):
+        """
+
+        Args:
+            filter:
+            **kwargs:
+
+        Returns:
+
+        """
         if filter is None:
             filter = 'active'
 
         return self._get('/admin/users/list/{0}.json'.format(filter), **kwargs)
 
     def private_messages(self, username=None, **kwargs):
+        """
+
+        Args:
+            username:
+            **kwargs:
+
+        Returns:
+
+        """
         if username is None:
             username = self.api_username
         return self._get('/topics/private-messages/{0}.json'.format(username), **kwargs)
 
     def private_messages_unread(self, username=None, **kwargs):
+        """
+
+        Args:
+            username:
+            **kwargs:
+
+        Returns:
+
+        """
         if username is None:
             username = self.api_username
         return self._get('/topics/private-messages-unread/{0}.json'.format(username), **kwargs)
 
     def hot_topics(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/hot.json', **kwargs)
 
     def latest_topics(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/latest.json', **kwargs)
 
     def new_topics(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/new.json', **kwargs)
 
     def topic(self, slug, topic_id, **kwargs):
+        """
+
+        Args:
+            slug:
+            topic_id:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
+        """
+
+        Args:
+            topic_id:
+            post_id:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
 
     def posts(self, topic_id, post_ids=None, **kwargs):
-        """ Get a set of posts from a topic
+        """
+        Get a set of posts from a topic
 
-        post_ids: a list of post ids from the topic stream
+        Args:
+            topic_id:
+            post_ids: a list of post ids from the topic stream
+            **kwargs:
+
+        Returns:
+
         """
         if post_ids:
             kwargs['post_ids[]'] = post_ids
         return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
 
     def topic_timings(self, topic_id, time, timings={}, **kwargs):
-        """ Set time spent reading a post
-
-        time: overall time for the topic
-        timings = { post_number: ms }
+        """
+        Set time spent reading a post
 
         A side effect of this is to mark the post as read
+
+        Args:
+            topic_id: { post_number: ms }
+            time: overall time for the topic (in what unit????)
+            timings:
+            **kwargs:
+
+        Returns:
+
         """
         kwargs['topic_id'] = topic_id
         kwargs['topic_time'] = time
@@ -157,23 +435,68 @@ class DiscourseClient(object):
         return self._post('/topics/timings', **kwargs)
 
     def topic_posts(self, topic_id, **kwargs):
+        """
+
+        Args:
+            topic_id:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
 
     def create_post(self, content, **kwargs):
-        """ int: topic_id the topic to reply too
+        """
+
+        Args:
+            content:
+            **kwargs:
+
+        Returns:
+
         """
         return self._post('/posts', raw=content, **kwargs)
 
     def update_post(self, post_id, content, edit_reason='', **kwargs):
+        """
+
+        Args:
+            post_id:
+            content:
+            edit_reason:
+            **kwargs:
+
+        Returns:
+
+        """
         kwargs['post[raw]'] = content
         kwargs['post[edit_reason]'] = edit_reason
         return self._put('/posts/{0}'.format(post_id), **kwargs)
 
     def topics_by(self, username, **kwargs):
+        """
+
+        Args:
+            username:
+            **kwargs:
+
+        Returns:
+
+        """
         url = '/topics/created-by/{0}.json'.format(username)
         return self._get(url, **kwargs)['topic_list']['topics']
 
     def invite_user_to_topic(self, user_email, topic_id):
+        """
+
+        Args:
+            user_email:
+            topic_id:
+
+        Returns:
+
+        """
         kwargs = {
             'email': user_email,
             'topic_id': topic_id,
@@ -181,13 +504,32 @@ class DiscourseClient(object):
         return self._post('/t/{0}/invite.json'.format(topic_id), **kwargs)
 
     def search(self, term, **kwargs):
+        """
+
+        Args:
+            term:
+            **kwargs:
+
+        Returns:
+
+        """
         kwargs['term'] = term
         return self._get('/search.json', **kwargs)
 
     def create_category(self, name, color, text_color='FFFFFF', permissions=None, parent=None, **kwargs):
-        """ permissions - dict of 'everyone', 'admins', 'moderators', 'staff' with values of
         """
 
+        Args:
+            name:
+            color:
+            text_color:
+            permissions: dict of 'everyone', 'admins', 'moderators', 'staff' with values of ???
+            parent:
+            **kwargs:
+
+        Returns:
+
+        """
         kwargs['name'] = name
         kwargs['color'] = color
         kwargs['text_color'] = text_color
@@ -212,32 +554,104 @@ class DiscourseClient(object):
         return self._post('/categories', **kwargs)
 
     def categories(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._get('/categories.json', **kwargs)['category_list']['categories']
 
     def category(self, name, parent=None, **kwargs):
+        """
+
+        Args:
+            name:
+            parent:
+            **kwargs:
+
+        Returns:
+
+        """
         if parent:
             name = u'{0}/{1}'.format(parent, name)
 
         return self._get(u'/category/{0}.json'.format(name), **kwargs)
 
     def site_settings(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         for setting, value in kwargs.items():
             setting = setting.replace(' ', '_')
             self._request('PUT', '/admin/site_settings/{0}'.format(setting), {setting: value})
 
     def _get(self, path, **kwargs):
+        """
+
+        Args:
+            path:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._request('GET', path, kwargs)
 
     def _put(self, path, **kwargs):
+        """
+
+        Args:
+            path:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._request('PUT', path, kwargs)
 
     def _post(self, path, **kwargs):
+        """
+
+        Args:
+            path:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._request('POST', path, kwargs)
 
     def _delete(self, path, **kwargs):
+        """
+
+        Args:
+            path:
+            **kwargs:
+
+        Returns:
+
+        """
         return self._request('DELETE', path, kwargs)
 
     def _request(self, verb, path, params):
+        """
+
+        Args:
+            verb:
+            path:
+            params:
+
+        Returns:
+
+        """
         params['api_key'] = self.api_key
         if 'api_username' not in params:
             params['api_username'] = self.api_username
