@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 
 README = open('README.rst').read()
+HISTORY = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 with open("pydiscourse/__init__.py", "r") as module_file:
     for line in module_file:
@@ -14,7 +15,7 @@ setup(
     name="pydiscourse",
     version=VERSION,
     description="A Python library for the Discourse API",
-    long_description=README,
+    long_description=README + '\n\n' + HISTORY,
     author="Marc Sibson and contributors",
     author_email="ben+pydiscourse@benlopatin.com",
     license="BSD",
