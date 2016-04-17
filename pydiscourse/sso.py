@@ -27,9 +27,10 @@ import hmac
 import hashlib
 
 try:  # py3
-    from urllib.parse import unquote, urlencode
+    from urllib.parse import unquote, urlencode, parse_qs
 except ImportError:
     from urllib import unquote, urlencode
+    from urlparse import parse_qs
 
 
 from pydiscourse.exceptions import DiscourseError
@@ -63,9 +64,9 @@ def sso_validate(payload, signature, secret):
     if this_signature != signature:
         raise DiscourseError('Payload does not match signature.')
 
-    nonce = decoded.split('=')[1]
-
-    return nonce
+    # Discourse returns querystring encoded value. We only need `nonce`
+    qs = parse_qs(decoded)
+    return qs['nonce'][0]
 
 
 def sso_payload(secret, **kwargs):
