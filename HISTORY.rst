@@ -3,6 +3,11 @@
 Release history
 ===============
 
+0.3.2
+-----
+
+* SSO functionality fixes
+
 0.3.1
 -----
 
