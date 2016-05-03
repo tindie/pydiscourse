@@ -613,6 +613,53 @@ class DiscourseClient(object):
             setting = setting.replace(' ', '_')
             self._request('PUT', '/admin/site_settings/{0}'.format(setting), {setting: value})
 
+    def groups(self, path, **kwargs):
+        """
+        Returns a list of all groups.
+        """
+        return self._get("admin/groups.json", **kwargs)
+
+    def group_owners(self, verb, groupid, params):
+        """
+        Add group owner.
+        PUT
+        params  = { "usernames" : "User_Name" }
+
+        Delete group owner.
+        DELETE
+        params = {'user_id': 2 }
+
+        Args:
+            verb: 'PUT', 'DELETE'
+            groupid:
+            params:
+
+        Returns: HTTP 200
+
+        """
+        return self._request(verb,'/groups/{0}/owners.json'.format(groupid), params)    
+
+
+    def group_members(self, verb, groupid, params):
+        """
+        Add group member.
+        PUT
+        params  = { "usernames" : "User_Name" }
+
+        Delete member.
+        DELETE
+        params = {'user_id': 2 }
+
+        Args:
+            verb: 'PUT', 'DELETE'
+            groupid:
+            params:
+
+        Returns: HTTP 200
+
+        """
+        return self._request(verb,'/groups/{0}/members.json'.format(groupid), params)    
+
     def _get(self, path, **kwargs):
         """
 
