@@ -3,6 +3,11 @@
 Release history
 ===============
 
+0.4.0
+-----
+
+* Adds initial groups functionality
+
 0.3.2
 -----
 

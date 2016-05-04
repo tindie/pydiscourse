@@ -13,6 +13,12 @@ from pydiscourse.sso import sso_payload
 
 log = logging.getLogger('pydiscourse.client')
 
+# HTTP verbs to be used as non string literals
+DELETE = "DELETE"
+GET = "GET"
+POST = "POST"
+PUT = "PUT"
+
 
 class DiscourseClient(object):
     """Discourse API client"""
@@ -611,54 +617,117 @@ class DiscourseClient(object):
         """
         for setting, value in kwargs.items():
             setting = setting.replace(' ', '_')
-            self._request('PUT', '/admin/site_settings/{0}'.format(setting), {setting: value})
+            self._request(PUT, '/admin/site_settings/{0}'.format(setting), {setting: value})
 
-    def groups(self, path, **kwargs):
+    def groups(self, **kwargs):
         """
         Returns a list of all groups.
-        """
-        return self._get("admin/groups.json", **kwargs)
 
-    def group_owners(self, verb, groupid, params):
-        """
-        Add group owner.
-        PUT
-        params  = { "usernames" : "User_Name" }
+        Returns:
+            List of dictionaries of groups
 
-        Delete group owner.
-        DELETE
-        params = {'user_id': 2 }
+                [
+                  {
+                    'alias_level': 0,
+                    'automatic': True,
+                    'automatic_membership_email_domains': None,
+                    'automatic_membership_retroactive': False,
+                    'grant_trust_level': None,
+                    'has_messages': True,
+                    'id': 1,
+                    'incoming_email': None,
+                    'mentionable': False,
+                    'name': 'admins',
+                    'notification_level': 2,
+                    'primary_group': False,
+                    'title': None,
+                    'user_count': 9,
+                    'visible': True
+                  },
+                  {
+                    'alias_level': 0,
+                    'automatic': True,
+                    'automatic_membership_email_domains': None,
+                    'automatic_membership_retroactive': False,
+                    'grant_trust_level': None,
+                    'has_messages': False,
+                    'id': 0,
+                    'incoming_email': None,
+                    'mentionable': False,
+                    'name': 'everyone',
+                    'notification_level': None,
+                    'primary_group': False,
+                    'title': None,
+                    'user_count': 0,
+                    'visible': True
+                  }
+                ]
+
+        """
+        return self._get("/admin/groups.json", **kwargs)
+
+    def add_group_owner(self, groupid, username):
+        """
+        Add an owner to a group by username
 
         Args:
-            verb: 'PUT', 'DELETE'
-            groupid:
-            params:
+            groupid: the ID of the group
+            username: the new owner usernmae
 
-        Returns: HTTP 200
+        Returns:
+            JSON API response
 
         """
-        return self._request(verb,'/groups/{0}/owners.json'.format(groupid), params)    
+        return self._put("/admin/groups/{0}/owners.json".format(groupid), usernames=username)
 
-
-    def group_members(self, verb, groupid, params):
+    def delete_group_owner(self, groupid, userid):
         """
-        Add group member.
-        PUT
-        params  = { "usernames" : "User_Name" }
+        Deletes an owner from a group by user ID
 
-        Delete member.
-        DELETE
-        params = {'user_id': 2 }
+        Does not delete the user from Discourse.
 
         Args:
-            verb: 'PUT', 'DELETE'
-            groupid:
-            params:
+            groupid: the ID of the group
+            userid: the ID of the user
 
-        Returns: HTTP 200
+        Returns:
+            JSON API response
 
         """
-        return self._request(verb,'/groups/{0}/members.json'.format(groupid), params)    
+        return self._delete("/admin/groups/{0}/owners.json".format(groupid), user_id=userid)
+
+    def add_group_member(self, groupid, username):
+        """
+        Add a member to a group by username
+
+        Args:
+            groupid: the ID of the group
+            username: the new member usernmae
+
+        Returns:
+            JSON API response
+
+        Raises:
+            DiscourseError if user is already member of group
+
+        """
+        return self._put("/admin/groups/{0}/members.json".format(groupid), usernames=username)
+
+    def delete_group_member(self, groupid, userid):
+        """
+        Deletes a member from a group by user ID
+
+        Does not delete the user from Discourse.
+
+        Args:
+            groupid: the ID of the group
+            userid: the ID of the user
+
+        Returns:
+            JSON API response
+
+        """
+        return self._delete("/admin/groups/{0}/members.json".format(groupid), user_id=userid)
 
     def _get(self, path, **kwargs):
         """
@@ -670,7 +739,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request('GET', path, kwargs)
+        return self._request(GET, path, kwargs)
 
     def _put(self, path, **kwargs):
         """
@@ -682,7 +751,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request('PUT', path, kwargs)
+        return self._request(PUT, path, kwargs)
 
     def _post(self, path, **kwargs):
         """
@@ -694,7 +763,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request('POST', path, kwargs)
+        return self._request(POST, path, kwargs)
 
     def _delete(self, path, **kwargs):
         """
@@ -706,15 +775,16 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request('DELETE', path, kwargs)
+        return self._request(DELETE, path, kwargs)
 
     def _request(self, verb, path, params):
         """
+        Executes HTTP request to API and handles response
 
         Args:
-            verb:
-            path:
-            params:
+            verb: HTTP verb as string: GET, DELETE, PUT, POST
+            path: the path on the Discourse API
+            params: dictionary of parameters to include to the API
 
         Returns:
 
