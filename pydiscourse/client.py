@@ -566,6 +566,17 @@ class DiscourseClient(object):
         """
         return self._post('/user_badges', username=username, badge_id=badge_id, **kwargs)
 
+    def user_badges(self, username, **kwargs):
+        """
+
+        Args:
+            username:
+
+        Returns:
+
+        """
+        return self._get('/user-badges/{}.json'.format(username))
+
 
     def create_category(self, name, color, text_color='FFFFFF',
                         permissions=None, parent=None, **kwargs):

@@ -120,6 +120,11 @@ class TestUser(ClientBaseTestCase):
         self.client.unsuspend(123)
         self.assertRequestCalled(request, 'PUT', '/admin/users/123/unsuspend')
 
+    def test_user_bagdes(self, request):
+        prepare_response(request)
+        self.client.user_badges('username')
+        self.assertRequestCalled(request, 'GET', '/user-badges/{}.json'.format('username'))
+
 
 @mock.patch('requests.request')
 class TestTopics(ClientBaseTestCase):
