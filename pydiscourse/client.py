@@ -541,6 +541,43 @@ class DiscourseClient(object):
         kwargs['term'] = term
         return self._get('/search.json', **kwargs)
 
+
+    def badges(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
+        return self._get('/admin/badges.json', **kwargs)
+
+    def grant_badge_to(self, username, badge_id, **kwargs):
+        """
+
+        Args:
+            username:
+            badge_id:
+            **kwargs:
+
+        Returns:
+
+        """
+        return self._post('/user_badges', username=username, badge_id=badge_id, **kwargs)
+
+    def user_badges(self, username, **kwargs):
+        """
+
+        Args:
+            username:
+
+        Returns:
+
+        """
+        return self._get('/user-badges/{}.json'.format(username))
+
+
     def create_category(self, name, color, text_color='FFFFFF',
                         permissions=None, parent=None, **kwargs):
         """
