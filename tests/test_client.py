@@ -175,3 +175,13 @@ class MiscellaneousTests(ClientBaseTestCase):
         prepare_response(request)
         self.client.users()
         self.assertRequestCalled(request, 'GET', '/admin/users/list/active.json')
+
+    def test_badges(self, request):
+        prepare_response(request)
+        self.client.badges()
+        self.assertRequestCalled(request, 'GET', '/admin/badges.json')
+
+    def test_grant_badge_to(self, request):
+        prepare_response(request)
+        self.client.grant_badge_to('username', 1)
+        self.assertRequestCalled(request, 'POST', '/user_badges', username='username', badge_id=1)
