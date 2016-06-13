@@ -37,13 +37,15 @@ test-all:  ## Run all tox test environments, parallelized
 
 check: clean-build clean-pyc clean-test lint test-coverage
 
-release: clean  ## Uploads new source and wheel distributions (cleans first)
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+build: clean  ## Create distribution files for release
+	python setup.py sdist bdist_wheel
 
-dist: clean  ## Creates new source and wheel distributions (cleans first)
+release: build  ## Create distribution files and publish to PyPI
+	python setup.py check -r -s
+	twine upload dist/*
+
+sdist: clean  ##sdist Create source distribution only
 	python setup.py sdist
-	python setup.py bdist_wheel
 	ls -l dist
 
 api-docs:  ## Build autodocs from docstrings
