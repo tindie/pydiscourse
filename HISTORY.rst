@@ -3,6 +3,11 @@
 Release history
 ===============
 
+0.5.0
+-----
+
+* Adds badges functionality
+
 0.4.0
 -----
 
