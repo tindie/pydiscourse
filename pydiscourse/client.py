@@ -125,8 +125,11 @@ class DiscourseClient(object):
     def new_topics(self, **kwargs):
         return self._get('/new.json', **kwargs)
 
-    def topic(self, slug, topic_id, **kwargs):
-        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+    def topic(self, slug, topic_id=None, **kwargs):
+        if topic_id is None:
+            return self._get_redirect('/t/{0}.json'.format(slug), **kwargs)
+        else:
+            return self._get_redirect('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
@@ -226,7 +229,35 @@ class DiscourseClient(object):
 
     def _get(self, path, **kwargs):
         return self._request('GET', path, kwargs)
+    
+    def _get_redirect(self, path, **kwargs):
+        kwargs['api_key'] = self.api_key
+        if 'api_username' not in kwargs:
+            kwargs['api_username'] = self.api_username
+        url = self.host + path
 
+        headers = {'Accept': 'application/json; charset=utf-8'}
+
+        response = requests.request(
+            'GET', url, allow_redirects=True, params=kwargs, headers=headers,
+            timeout=self.timeout)
+            
+        if response.status_code != 200:
+            raise DiscourseError('Should be Redirect, invalid api key or host?', response=response)
+
+        try:
+            decoded = response.json()
+        except ValueError:
+            raise DiscourseError('failed to decode response', response=response)
+
+        if 'errors' in decoded:
+            message = decoded.get('message')
+            if not message:
+                message = u','.join(decoded['errors'])
+            raise DiscourseError(message, response=response)
+
+        return decoded
+        
     def _put(self, path, **kwargs):
         return self._request('PUT', path, kwargs)
 
