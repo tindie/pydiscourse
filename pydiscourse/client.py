@@ -4,6 +4,7 @@ import logging
 import requests
 
 from pydiscourse.exceptions import DiscourseError, DiscourseServerError, DiscourseClientError
+from pydiscourse.sso import sso_payload
 
 
 log = logging.getLogger('pydiscourse.client')
@@ -31,6 +32,13 @@ class DiscourseClient(object):
         confirmations = r['value']
         return self._post('/users', name=name, username=username, email=email,
                   password=password, password_confirmation=confirmations, challenge=challenge, **kwargs)
+
+    def by_external_id(self, external_id):
+        response = self._get("/users/by-external/{0}".format(external_id))
+        return response['user']
+
+    def log_out(self, userid):
+        return self._post('/admin/users/{0}/log_out'.format(userid))
 
     def trust_level(self, userid, level):
         return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
@@ -73,8 +81,13 @@ class DiscourseClient(object):
     def set_preference(self, username=None, **kwargs):
         if username is None:
             username = self.api_username
-
         return self._put(u'/users/{0}'.format(username), **kwargs)
+
+    def sync_sso(self, **kwargs):
+        # expect sso_secret, name, username, email, external_id, avatar_url, avatar_force_update
+        sso_secret = kwargs.pop('sso_secret')
+        payload = sso_payload(sso_secret, **kwargs)
+        return self._post('/admin/users/sync_sso?{0}'.format(payload), **kwargs)
 
     def generate_api_key(self, userid, **kwargs):
         return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
@@ -112,8 +125,11 @@ class DiscourseClient(object):
     def new_topics(self, **kwargs):
         return self._get('/new.json', **kwargs)
 
-    def topic(self, slug, topic_id, **kwargs):
-        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+    def topic(self, slug, topic_id=None, **kwargs):
+        if topic_id is None:
+            return self._get_redirect('/t/{0}.json'.format(slug), **kwargs)
+        else:
+            return self._get_redirect('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
@@ -213,7 +229,35 @@ class DiscourseClient(object):
 
     def _get(self, path, **kwargs):
         return self._request('GET', path, kwargs)
+    
+    def _get_redirect(self, path, **kwargs):
+        kwargs['api_key'] = self.api_key
+        if 'api_username' not in kwargs:
+            kwargs['api_username'] = self.api_username
+        url = self.host + path
 
+        headers = {'Accept': 'application/json; charset=utf-8'}
+
+        response = requests.request(
+            'GET', url, allow_redirects=True, params=kwargs, headers=headers,
+            timeout=self.timeout)
+            
+        if response.status_code != 200:
+            raise DiscourseError('Should be Redirect, invalid api key or host?', response=response)
+
+        try:
+            decoded = response.json()
+        except ValueError:
+            raise DiscourseError('failed to decode response', response=response)
+
+        if 'errors' in decoded:
+            message = decoded.get('message')
+            if not message:
+                message = u','.join(decoded['errors'])
+            raise DiscourseError(message, response=response)
+
+        return decoded
+        
     def _put(self, path, **kwargs):
         return self._request('PUT', path, kwargs)
 
@@ -229,7 +273,11 @@ class DiscourseClient(object):
             params['api_username'] = self.api_username
         url = self.host + path
 
-        response = requests.request(verb, url, allow_redirects=False, params=params, timeout=self.timeout)
+        headers = {'Accept': 'application/json; charset=utf-8'}
+
+        response = requests.request(
+            verb, url, allow_redirects=False, params=params, headers=headers,
+            timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
         if not response.ok:
