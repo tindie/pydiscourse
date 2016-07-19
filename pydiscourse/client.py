@@ -750,6 +750,23 @@ class DiscourseClient(object):
         """
         return self._put("/admin/groups/{0}/members.json".format(groupid), usernames=username)
 
+    def add_user_to_group(self, groupid, userid):
+        """
+        Add a member to a group by with user id.
+
+        Args:
+            groupid: the ID of the group
+            userid: the member id
+
+        Returns:
+            JSON API response
+
+        Raises:
+            DiscourseError if user is already member of group
+
+        """
+        return self._post("/admin/users/{0}/groups".format(userid), group_id=groupid)
+
     def delete_group_member(self, groupid, userid):
         """
         Deletes a member from a group by user ID
