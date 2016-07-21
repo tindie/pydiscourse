@@ -1,40 +1,33 @@
-import codecs
-import os
-
 from setuptools import setup, find_packages
 
 
-def read(fname):
-    return codecs.open(os.path.join(os.path.dirname(__file__), fname), 'rt').read()
+README = open('README.rst').read()
+HISTORY = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
-
-# Provided as an attribute, so you can append to these instead
-# of replicating them:
-standard_exclude = ["*.py", "*.pyc", "*$py.class", "*~", ".*", "*.bak"]
-standard_exclude_directories = [
-    ".*", "CVS", "_darcs", "./build", "./dist", "EGG-INFO", "*.egg-info"
-]
-
-
-NAME = "pydiscourse"
-DESCRIPTION = "A Python library for the Discourse API"
-AUTHOR = "Marc Sibson"
-AUTHOR_EMAIL = "sibson@gmail.com"
-URL = "https://github.com/tindie/pydiscourse"
-PACKAGE = "pydiscourse"
-VERSION = __import__(PACKAGE).__version__
+with open("pydiscourse/__init__.py", "r") as module_file:
+    for line in module_file:
+        if line.startswith("__version__"):
+            version_string = line.split("=")[1]
+            VERSION = version_string.strip().replace("'", "")
 
 
 setup(
-    name=NAME,
+    name="pydiscourse",
     version=VERSION,
-    description=DESCRIPTION,
-    long_description=read("README.md"),
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
+    description="A Python library for the Discourse API",
+    long_description=README + '\n\n' + HISTORY,
+    author="Marc Sibson and contributors",
+    author_email="ben+pydiscourse@benlopatin.com",
     license="BSD",
-    url=URL,
+    url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
+    install_requires=[
+        'requests>=2.0.0',
+    ],
+    tests_require=[
+        'mock',
+    ],
+    test_suite='tests',
     entry_points={
         'console_scripts': [
             'pydiscoursecli = pydiscourse.main:main'
@@ -47,8 +40,10 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        'Programming Language :: Python :: Implementation :: PyPy',
     ],
     zip_safe=False,
 )

@@ -1,9 +1,11 @@
 """
-Utilities to implement Single Sign On for Discourse with a Python managed authentication DB
+Utilities to implement Single Sign On for Discourse with a Python managed
+authentication DB
 
 https://meta.discourse.org/t/official-single-sign-on-for-discourse/13045
 
-Thanks to James Potter for the heavy lifting, detailed at https://meta.discourse.org/t/sso-example-for-django/14258
+Thanks to James Potter for the heavy lifting, detailed at
+https://meta.discourse.org/t/sso-example-for-django/14258
 
 A SSO request handler might look something like
 
@@ -16,17 +18,19 @@ A SSO request handler might look something like
         except DiscourseError as e:
             return HTTP400(e.args[0])
 
-        url = sso_redirect_url(nonce, SECRET, request.user.email, request.user.id, request.user.username)
+        url = sso_redirect_url(nonce, SECRET, request.user.email,
+                request.user.id, request.user.username)
         return redirect('http://discuss.example.com' + url)
 """
-import base64
+from base64 import b64encode, b64decode
 import hmac
 import hashlib
 
 try:  # py3
-    from urllib.parse import unquote, urlencode
+    from urllib.parse import unquote, urlencode, parse_qs
 except ImportError:
     from urllib import unquote, urlencode
+    from urlparse import parse_qs
 
 
 from pydiscourse.exceptions import DiscourseError
@@ -50,19 +54,26 @@ def sso_validate(payload, signature, secret):
     if not payload:
         raise DiscourseError('Invalid payload..')
 
-    decoded = base64.decodestring(payload)
+    decoded = b64decode(payload.encode('utf-8')).decode('utf-8')
     if 'nonce' not in decoded:
         raise DiscourseError('Invalid payload..')
 
-    h = hmac.new(secret, payload, digestmod=hashlib.sha256)
+    h = hmac.new(secret.encode('utf-8'), payload.encode('utf-8'), digestmod=hashlib.sha256)
     this_signature = h.hexdigest()
 
     if this_signature != signature:
         raise DiscourseError('Payload does not match signature.')
 
-    nonce = decoded.split('=')[1]
+    # Discourse returns querystring encoded value. We only need `nonce`
+    qs = parse_qs(decoded)
+    return qs['nonce'][0]
 
-    return nonce
+
+def sso_payload(secret, **kwargs):
+    return_payload = b64encode(urlencode(kwargs).encode('utf-8'))
+    h = hmac.new(secret.encode('utf-8'), return_payload, digestmod=hashlib.sha256)
+    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
+    return query_string
 
 
 def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
@@ -82,8 +93,4 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
         'username': username
     })
 
-    return_payload = base64.encodestring(urlencode(kwargs))
-    h = hmac.new(secret, return_payload, digestmod=hashlib.sha256)
-    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
-
-    return '/session/sso_login?%s' % query_string
+    return '/session/sso_login?%s' % sso_payload(secret, **kwargs)
