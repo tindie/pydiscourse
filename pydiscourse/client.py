@@ -106,8 +106,11 @@ class DiscourseClient(object):
     def hot_topics(self, **kwargs):
         return self._get('/hot.json', **kwargs)
 
-    def latest_topics(self, **kwargs):
-        return self._get('/latest.json', **kwargs)
+    def latest_topics(self, category=None, **kwargs):
+        uri = '/latest.json'
+        if category:
+            uri = '/c/%s/l%s' % (category, uri)
+        return self._get(uri, **kwargs)
 
     def new_topics(self, **kwargs):
         return self._get('/new.json', **kwargs)
