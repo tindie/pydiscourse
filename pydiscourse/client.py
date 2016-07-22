@@ -106,14 +106,20 @@ class DiscourseClient(object):
     def hot_topics(self, **kwargs):
         return self._get('/hot.json', **kwargs)
 
-    def latest_topics(self, **kwargs):
-        return self._get('/latest.json', **kwargs)
+    def latest_topics(self, category=None, **kwargs):
+        uri = '/latest.json'
+        if category:
+            uri = '/c/%s/l%s' % (category, uri)
+        return self._get(uri, **kwargs)
 
     def new_topics(self, **kwargs):
         return self._get('/new.json', **kwargs)
 
     def topic(self, slug, topic_id, **kwargs):
-        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+        if slug:
+            return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+        else:
+            return self._get('/t/{0}.json'.format(topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
@@ -158,6 +164,28 @@ class DiscourseClient(object):
     def topics_by(self, username, **kwargs):
         url = '/topics/created-by/{0}.json'.format(username)
         return self._get(url, **kwargs)['topic_list']['topics']
+
+    # filter options
+    # LIKE                = 1
+    # WAS_LIKED           = 2
+    # BOOKMARK            = 3
+    # NEW_TOPIC           = 4
+    # REPLY               = 5
+    # RESPONSE            = 6
+    # MENTION             = 7
+    # QUOTE               = 9
+    # EDIT                = 11
+    # NEW_PRIVATE_MESSAGE = 12
+    # GOT_PRIVATE_MESSAGE = 13
+    # PENDING             = 14
+    def user_actions(self, username, filter=None, offset=None, **kwargs):
+        url = '/user_actions.json'
+        kwargs['username'] = username
+        if filter:
+            kwargs['filter'] = filter
+        if offset:
+            kwargs['offset'] = offset
+        return self._get(url, **kwargs)['user_actions']
 
     def invite_user_to_topic(self, user_email, topic_id):
         kwargs = {
