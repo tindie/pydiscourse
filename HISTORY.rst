@@ -3,6 +3,11 @@
 Release history
 ===============
 
+0.6.0
+-----
+
+* Adds method to add user to group by user ID
+
 0.5.0
 -----
 
