@@ -42,7 +42,9 @@ class ClientBaseTestCase(unittest.TestCase):
         kwargs = kwargs['params']
         self.assertEqual(kwargs.pop('api_username'), self.api_username)
         self.assertEqual(kwargs.pop('api_key'), self.api_key)
-        self.assertEqual(kwargs, params)
+
+        if verb == 'GET':
+            self.assertEqual(kwargs, params)
 
 
 

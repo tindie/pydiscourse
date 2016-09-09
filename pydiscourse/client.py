@@ -793,7 +793,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request(GET, path, kwargs)
+        return self._request(GET, path, params=kwargs)
 
     def _put(self, path, **kwargs):
         """
@@ -805,7 +805,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request(PUT, path, kwargs)
+        return self._request(PUT, path, data=kwargs)
 
     def _post(self, path, **kwargs):
         """
@@ -817,7 +817,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request(POST, path, kwargs)
+        return self._request(POST, path, data=kwargs)
 
     def _delete(self, path, **kwargs):
         """
@@ -829,9 +829,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request(DELETE, path, kwargs)
+        return self._request(DELETE, path, params=kwargs)
 
-    def _request(self, verb, path, params):
+    def _request(self, verb, path, params={}, data={}):
         """
         Executes HTTP request to API and handles response
 
@@ -851,7 +851,7 @@ class DiscourseClient(object):
         headers = {'Accept': 'application/json; charset=utf-8'}
 
         response = requests.request(
-            verb, url, allow_redirects=False, params=params, headers=headers,
+            verb, url, allow_redirects=False, params=params, data=data, headers=headers,
             timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
