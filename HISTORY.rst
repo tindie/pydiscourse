@@ -3,6 +3,12 @@
 Release history
 ===============
 
+0.7.0
+-----
+
+* Place request parameters in the request body for POST and PUT requests.
+  Allows larger request sizes and solves for `URI Too Large` error.
+
 0.6.0
 -----
 
