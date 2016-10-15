@@ -703,7 +703,7 @@ class DiscourseClient(object):
         """
         return self._get("/admin/groups.json", **kwargs)
 
-    def create_group(self, name, title, visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1):
+    def create_group(self, name, title, visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, **kwargs):
         """
         Args:
 
