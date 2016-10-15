@@ -57,6 +57,17 @@ class DiscourseClient(object):
         """
         return self._get('/users/{0}.json'.format(username))['user']
 
+    def user_all(self, user_id):
+        """
+        Get all user information for a specific user, needs to be admin
+
+        Args:
+            user_id: id of the user to return
+        Returns:
+            dict of user information
+        """
+        return self._get('/admin/users/{0}.json'.format(user_id))
+
     def create_user(self, name, username, email, password, **kwargs):
         """
         Create a Discourse user
