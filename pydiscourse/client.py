@@ -703,12 +703,18 @@ class DiscourseClient(object):
         """
         return self._get("/admin/groups.json", **kwargs)
 
-    def create_group(self, name, title, visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, **kwargs):
+    def group(self, group_name):
+        """
+        Get all infos of a group by group name
+        """
+        return self._get("/groups/{0}/members.json".format(group_name))
+
+    def create_group(self, name, title="", visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, **kwargs):
         """
         Args:
 
             name: name of the group
-            title: title of the group
+            title: "" (title of the member of this group)
             visible: true
             alias_level: 0
             automatic_membership_retroactive: false
@@ -758,6 +764,20 @@ class DiscourseClient(object):
 
         """
         return self._delete("/admin/groups/{0}/owners.json".format(groupid), user_id=userid)
+
+    def group_owners(self, group_name):
+        """
+        Get all owners of a group by group name
+        """
+        group = self._get("/groups/{0}/members.json".format(group_name))
+        return group['owners']
+
+    def group_members(self, group_name):
+        """
+        Get all members of a group by group name
+        """
+        group = self._get("/groups/{0}/members.json".format(group_name))
+        return group['members']
 
     def add_group_member(self, groupid, username):
         """
