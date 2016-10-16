@@ -746,6 +746,20 @@ class DiscourseClient(object):
 
         return self._post("/admin/groups", **kwargs)
 
+    def delete_group(self, groupid):
+        """
+        Deletes a group by its ID
+
+        Args:
+            groupid: the ID of the group
+
+        Returns:
+            JSON API response
+
+        """
+        return self._delete("/admin/groups/{0}.json".format(groupid))
+
+
     def add_group_owner(self, groupid, username):
         """
         Add an owner to a group by username
