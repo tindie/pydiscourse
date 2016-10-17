@@ -57,6 +57,17 @@ class DiscourseClient(object):
         """
         return self._get('/users/{0}.json'.format(username))['user']
 
+    def user_all(self, user_id):
+        """
+        Get all user information for a specific user, needs to be admin
+
+        Args:
+            user_id: id of the user to return
+        Returns:
+            dict of user information
+        """
+        return self._get('/admin/users/{0}.json'.format(user_id))
+
     def create_user(self, name, username, email, password, **kwargs):
         """
         Create a Discourse user
@@ -703,6 +714,52 @@ class DiscourseClient(object):
         """
         return self._get("/admin/groups.json", **kwargs)
 
+    def group(self, group_name):
+        """
+        Get all infos of a group by group name
+        """
+        return self._get("/groups/{0}/members.json".format(group_name))
+
+    def create_group(self, name, title="", visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, **kwargs):
+        """
+        Args:
+
+            name: name of the group
+            title: "" (title of the member of this group)
+            visible: true
+            alias_level: 0
+            automatic_membership_retroactive: false
+            primary_group: false
+            automatic: false
+            automatic_membership_email_domains: ""
+            grant_trust_level: 1
+        """
+        kwargs['name'] = name
+        kwargs['title'] = title
+        kwargs['visible'] = visible
+        kwargs['alias_level'] = alias_level
+        kwargs['automatic_membership_retroactive'] = automatic_membership_retroactive
+        kwargs['primary_group'] = primary_group
+        kwargs['automatic'] = automatic
+        kwargs['automatic_membership_email_domains'] = automatic_membership_email_domains
+        kwargs['grant_trust_level'] = grant_trust_level
+
+        return self._post("/admin/groups", **kwargs)
+
+    def delete_group(self, groupid):
+        """
+        Deletes a group by its ID
+
+        Args:
+            groupid: the ID of the group
+
+        Returns:
+            JSON API response
+
+        """
+        return self._delete("/admin/groups/{0}.json".format(groupid))
+
+
     def add_group_owner(self, groupid, username):
         """
         Add an owner to a group by username
@@ -732,6 +789,20 @@ class DiscourseClient(object):
 
         """
         return self._delete("/admin/groups/{0}/owners.json".format(groupid), user_id=userid)
+
+    def group_owners(self, group_name):
+        """
+        Get all owners of a group by group name
+        """
+        group = self._get("/groups/{0}/members.json".format(group_name))
+        return group['owners']
+
+    def group_members(self, group_name):
+        """
+        Get all members of a group by group name
+        """
+        group = self._get("/groups/{0}/members.json".format(group_name))
+        return group['members']
 
     def add_group_member(self, groupid, username):
         """
