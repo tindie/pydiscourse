@@ -1,4 +1,5 @@
 Development
 ===============
-.. include:: ../DEVELOP.md
-    :start-line: 2
+
+.. include:: ../CONTRIBUTING.rst
+    :start-line: 3
