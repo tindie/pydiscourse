@@ -596,9 +596,10 @@ class DiscourseClient(object):
         Args:
             name:
             color:
-            text_color:
+            text_color: hex color without number symbol
             permissions: dict of 'everyone', 'admins', 'moderators', 'staff' with values of ???
-            parent:
+            parent: name of the category
+            parent_category_id: 
             **kwargs:
 
         Returns:
