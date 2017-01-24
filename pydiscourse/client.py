@@ -233,6 +233,23 @@ class DiscourseClient(object):
         url = '/users/{0}/preferences/avatar/pick'.format(username)
         return self._put(url, **kwargs)
 
+    def update_avatar(self, username, url, **kwargs):
+        """
+
+        Args:
+            username:
+            url:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['type'] = 'avatar'
+        kwargs['synchronous'] = 'true'
+        upload_response = self._post('/uploads', url=url, **kwargs)
+        return self._put('/users/{0}/preferences/avatar/pick'.format(username),
+                         upload_id=upload_response['id'], **kwargs)
+
     def update_email(self, username, email, **kwargs):
         """
 
