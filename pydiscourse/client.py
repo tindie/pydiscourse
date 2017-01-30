@@ -917,6 +917,17 @@ class DiscourseClient(object):
         """
         return self._delete("/admin/groups/{0}/members.json".format(groupid), user_id=userid)
 
+    def color_schemes(self, **kwargs):
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
+        return self._get('/admin/color_schemes.json', **kwargs)
+
     def create_color_scheme(self, name, enabled, colors, **kwargs):
         """
 
