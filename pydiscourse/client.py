@@ -569,7 +569,6 @@ class DiscourseClient(object):
         kwargs['term'] = term
         return self._get('/search.json', **kwargs)
 
-
     def badges(self, **kwargs):
         """
 
@@ -604,7 +603,6 @@ class DiscourseClient(object):
 
         """
         return self._get('/user-badges/{}.json'.format(username))
-
 
     def create_category(self, name, color, text_color='FFFFFF',
                         permissions=None, parent=None, **kwargs):
@@ -672,18 +670,45 @@ class DiscourseClient(object):
 
         return self._get(u'/category/{0}.json'.format(name), **kwargs)
 
-    def site_settings(self, **kwargs):
+    def delete_category(self, category_id, **kwargs):
         """
 
         Args:
+            category_id:
             **kwargs:
 
         Returns:
 
         """
-        for setting, value in kwargs.items():
+        return self._delete(u'/categories/{0}'.format(category_id), **kwargs)
+
+    def site_settings(self, settings, **kwargs):
+        """
+
+        Args:
+            settings:
+            **kwargs:
+
+        Returns:
+
+        """
+        for setting, value in settings.items():
             setting = setting.replace(' ', '_')
             self._request(PUT, '/admin/site_settings/{0}'.format(setting), {setting: value})
+
+    def customize_site_texts(self, site_texts, **kwargs):
+        """
+
+        Args:
+            site_texts:
+            **kwargs:
+
+        Returns:
+
+        """
+        for site_text, value in site_texts.items():
+            kwargs = {'site_text': {'value': value}}
+            self._put('/admin/customize/site_texts/{0}'.format(site_text), json=True, **kwargs)
 
     def groups(self, **kwargs):
         """
@@ -778,7 +803,6 @@ class DiscourseClient(object):
 
         """
         return self._delete("/admin/groups/{0}.json".format(groupid))
-
 
     def add_group_owner(self, groupid, username):
         """
@@ -892,6 +916,28 @@ class DiscourseClient(object):
 
         """
         return self._delete("/admin/groups/{0}/members.json".format(groupid), user_id=userid)
+
+    def create_color_scheme(self, name, enabled, colors, **kwargs):
+        """
+
+        Args:
+            name:
+            enabled:
+            colors:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['name'] = name
+        if bool(enabled):
+            kwargs['enabled'] = 'true'
+        else:
+            kwargs['enabled'] = 'false'
+        kwargs['colors'] = [{'name': name, 'hex': color}
+                            for name, color in colors.items()]
+        kwargs = {'color_scheme': kwargs}
+        return self._post("/admin/color_schemes.json", json=True, **kwargs)
 
     def _get(self, path, **kwargs):
         """
