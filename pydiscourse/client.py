@@ -763,7 +763,7 @@ class DiscourseClient(object):
         """
         return self._get("/groups/{0}/members.json".format(group_name))
 
-    def create_group(self, name, title="", visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, **kwargs):
+    def create_group(self, name, title="", visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, flair_url=None, flair_bg_color=None, flair_color=None, **kwargs):
         """
         Args:
 
@@ -776,6 +776,10 @@ class DiscourseClient(object):
             automatic: false
             automatic_membership_email_domains: ""
             grant_trust_level: 1
+            flair_url: Avatar Flair Image
+            flair_bg_color: Avatar Flair Background Color
+            flair_color: Avatar Flair Color
+
         """
         kwargs['name'] = name
         kwargs['title'] = title
@@ -786,6 +790,9 @@ class DiscourseClient(object):
         kwargs['automatic'] = automatic
         kwargs['automatic_membership_email_domains'] = automatic_membership_email_domains
         kwargs['grant_trust_level'] = grant_trust_level
+        kwargs['flair_url'] = flair_url
+        kwargs['flair_bg_color'] = flair_bg_color
+        kwargs['flair_color'] = flair_color
         # Discourse v.1.7.0
         kwargs = {'group': kwargs}
 
