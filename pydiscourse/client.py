@@ -957,6 +957,23 @@ class DiscourseClient(object):
         kwargs = {'color_scheme': kwargs}
         return self._post("/admin/color_schemes.json", json=True, **kwargs)
 
+    def trust_level_lock(self, user_id, locked, **kwargs):
+        """
+
+        Args:
+            user_id:
+            locked:
+            **kwargs:
+
+        Returns:
+
+        """
+        if bool(locked):
+            kwargs['locked'] = 'true'
+        else:
+            kwargs['locked'] = 'false'
+        return self._put('/admin/users/{}/trust_level_lock'.format(user_id), **kwargs)
+
     def upload_image(self, image, type, synchronous, **kwargs):
         """
 
