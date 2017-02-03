@@ -957,6 +957,27 @@ class DiscourseClient(object):
         kwargs = {'color_scheme': kwargs}
         return self._post("/admin/color_schemes.json", json=True, **kwargs)
 
+    def upload_image(self, image, type, synchronous, **kwargs):
+        """
+
+        Args:
+            name:
+            file:
+            type:
+            synchronous:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['type'] = type
+        if bool(synchronous):
+            kwargs['synchronous'] = 'true'
+        else:
+            kwargs['synchronous'] = 'false'
+        files = {'file': open(image, 'rb')}
+        return self._post('/uploads.json', files=files, **kwargs)
+
     def _get(self, path, **kwargs):
         """
 
@@ -981,7 +1002,7 @@ class DiscourseClient(object):
         """
         return self._request(PUT, path, data=kwargs)
 
-    def _post(self, path,  json=False, **kwargs):
+    def _post(self, path, files={}, json=False, **kwargs):
         """
 
         Args:
@@ -992,9 +1013,9 @@ class DiscourseClient(object):
 
         """
         if not json:
-            return self._request(POST, path, data=kwargs)
+            return self._request(POST, path, files=files, data=kwargs)
         else:
-            return self._request(POST, path, json=kwargs)
+            return self._request(POST, path, files=files, json=kwargs)
 
     def _delete(self, path, **kwargs):
         """
@@ -1008,7 +1029,7 @@ class DiscourseClient(object):
         """
         return self._request(DELETE, path, params=kwargs)
 
-    def _request(self, verb, path, params={}, data={}, json={}):
+    def _request(self, verb, path, params={}, files={}, data={}, json={}):
         """
         Executes HTTP request to API and handles response
 
@@ -1027,7 +1048,7 @@ class DiscourseClient(object):
 
         headers = {'Accept': 'application/json; charset=utf-8'}
         response = requests.request(
-            verb, url, allow_redirects=False, params=params, data=data, json=json, headers=headers,
+            verb, url, allow_redirects=False, params=params, files=files, data=data, json=json, headers=headers,
             timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
