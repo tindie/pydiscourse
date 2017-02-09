@@ -499,6 +499,20 @@ class DiscourseClient(object):
         """
         return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
 
+    def update_topic(self, topic_url, title, **kwargs):
+        """
+
+        Args:
+            topic_url:
+            title:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['title'] = title
+        return self._put('{}'.format(topic_url), **kwargs)
+
     def create_post(self, content, **kwargs):
         """
 
@@ -956,6 +970,27 @@ class DiscourseClient(object):
                             for name, color in colors.items()]
         kwargs = {'color_scheme': kwargs}
         return self._post("/admin/color_schemes.json", json=True, **kwargs)
+
+    def create_site_customization(self, name, enabled, stylesheet, **kwargs):
+        """
+
+        Args:
+            name:
+            enabled:
+            stylesheet:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['name'] = name
+        if bool(enabled):
+            kwargs['enabled'] = 'true'
+        else:
+            kwargs['enabled'] = 'false'
+        kwargs['stylesheet'] = stylesheet
+        kwargs = {'site_customization': kwargs}
+        return self._post("/admin/site_customizations", json=True, **kwargs)
 
     def trust_level_lock(self, user_id, locked, **kwargs):
         """
