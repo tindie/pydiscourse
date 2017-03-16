@@ -1009,6 +1009,17 @@ class DiscourseClient(object):
             kwargs['locked'] = 'false'
         return self._put('/admin/users/{}/trust_level_lock'.format(user_id), **kwargs)
 
+    def block(self, user_id, **kwargs):
+        """
+
+        Args:
+            userid:
+
+        Returns:
+
+        """
+        return self._put('/admin/users/{}/block'.format(user_id), **kwargs)
+
     def upload_image(self, image, type, synchronous, **kwargs):
         """
 
@@ -1029,6 +1040,22 @@ class DiscourseClient(object):
             kwargs['synchronous'] = 'false'
         files = {'file': open(image, 'rb')}
         return self._post('/uploads.json', files=files, **kwargs)
+
+    def user_actions(self, username, filter, offset=0, **kwargs):
+        """
+
+        Args:
+            username:
+            filter:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['username'] = username
+        kwargs['filter'] = filter
+        kwargs['offset'] = offset
+        return self._get('/user_actions.json', **kwargs)['user_actions']
 
     def _get(self, path, **kwargs):
         """
