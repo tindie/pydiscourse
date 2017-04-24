@@ -1057,6 +1057,23 @@ class DiscourseClient(object):
         kwargs['offset'] = offset
         return self._get('/user_actions.json', **kwargs)['user_actions']
 
+    def tag_group(self, name, tag_names, parent_tag_name=None, **kwargs):
+        """
+
+        Args:
+            name:
+            tag_names:
+            parent_tag_name:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['name'] = name
+        kwargs['tag_names'] = tag_names
+        kwargs['parent_tag_name'] = parent_tag_name
+        return self._post('/tag_groups', json=True, **kwargs)['tag_group']
+
     def _get(self, path, **kwargs):
         """
 
