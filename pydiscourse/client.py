@@ -862,11 +862,12 @@ class DiscourseClient(object):
         group = self._get("/groups/{0}/members.json".format(group_name))
         return group['owners']
 
-    def group_members(self, group_name):
+    def group_members(self, group_name, offset=0, **kwargs):
         """
         Get all members of a group by group name
         """
-        group = self._get("/groups/{0}/members.json".format(group_name))
+        kwargs['offset'] = offset
+        group = self._get("/groups/{0}/members.json".format(group_name), **kwargs)
         return group['members']
 
     def add_group_member(self, groupid, username):
