@@ -618,6 +618,17 @@ class DiscourseClient(object):
         """
         return self._get('/user-badges/{}.json'.format(username))
 
+    def user_emails(self, username, **kwargs):
+        """
+
+        Args:
+            username:
+
+        Returns:
+
+        """
+        return self._get('/u/{}/emails.json'.format(username))
+
     def create_category(self, name, color, text_color='FFFFFF',
                         permissions=None, parent=None, **kwargs):
         """
