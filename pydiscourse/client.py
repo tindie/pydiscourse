@@ -513,17 +513,44 @@ class DiscourseClient(object):
         kwargs['title'] = title
         return self._put('{}'.format(topic_url), **kwargs)
 
-    def create_post(self, content, **kwargs):
+    def create_post(self, content, category_id=None, topic_id=None,
+                    title=None, tags=[], **kwargs):
         """
 
         Args:
             content:
+            category_id:
+            topic_id:
+            title:
+            tags:
             **kwargs:
 
         Returns:
 
         """
-        return self._post('/posts', raw=content, **kwargs)
+        if tags:
+            kwargs['tags[]'] = tags
+        return self._post('/posts', category=category_id, title=title,
+                          raw=content, topic_id=topic_id, **kwargs)
+
+    def update_topic_status(self, topic_id, status, enabled, **kwargs):
+        """
+
+        Args:
+            topic_id:
+            status:
+            enabled:
+            **kwargs:
+
+        Returns:
+
+        """
+        kwargs['status'] = status
+        if bool(enabled):
+            kwargs['enabled'] = 'true'
+        else:
+            kwargs['enabled'] = 'false'
+        return self._put('/t/{0}/status'.format(topic_id), **kwargs)
 
     def update_post(self, post_id, content, edit_reason='', **kwargs):
         """
