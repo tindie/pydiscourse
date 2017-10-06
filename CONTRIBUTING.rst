@@ -12,6 +12,25 @@ Please use `Google docstring format
 
 This *will* be enforced.
 
+Pull requests
+=============
+
+Reviewing and merging pull requests is work, so whatever you can do to make this
+easier for the package maintainer not only speed up the process of getting your
+changes merged but also ensure they are. These few guidelines help significantly.
+If they are confusing or you need help understanding how to accomplish them,
+please ask for help in an issue. 
+
+- Please do make sure your chnageset represents a *discrete update*. If you would like
+to fix formatting, by all means, but don't mix that up with a bug fix. Those are separate PRs.
+- Please do make sure that both your pull request description and your commits are meaningful
+and descriptive. Rebase first, if need be.
+- Please do make sure your changeset does not include more commits than necessary. Rebase first, if need be.
+- Please do make sure the changeset is not very big. If you have a large change propose it
+in an issue first.
+- Please do make sure your changeset is based on a branch from the current HEAD of the
+fork you wish to merge against. This is a general best practice. Rebase first, if need be.
+
 Testing
 =======
 
