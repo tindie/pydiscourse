@@ -745,7 +745,7 @@ class DiscourseClient(object):
         kwargs['automatic_membership_email_domains'] = automatic_membership_email_domains
         kwargs['grant_trust_level'] = grant_trust_level
 
-        return self._post("/admin/groups", **kwargs)
+        return self._post("/admin/groups", json=True, **kwargs)
 
     def delete_group(self, groupid):
         """
@@ -879,7 +879,7 @@ class DiscourseClient(object):
         """
         return self._request(PUT, path, data=kwargs)
 
-    def _post(self, path, **kwargs):
+    def _post(self, path,  json=False, **kwargs):
         """
 
         Args:
@@ -889,7 +889,10 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._request(POST, path, data=kwargs)
+        if not json:
+            return self._request(POST, path, data=kwargs)
+        else:
+            return self._request(POST, path, json=kwargs)
 
     def _delete(self, path, **kwargs):
         """
@@ -903,7 +906,7 @@ class DiscourseClient(object):
         """
         return self._request(DELETE, path, params=kwargs)
 
-    def _request(self, verb, path, params={}, data={}):
+    def _request(self, verb, path, params={}, data={}, json={}):
         """
         Executes HTTP request to API and handles response
 
@@ -921,9 +924,8 @@ class DiscourseClient(object):
         url = self.host + path
 
         headers = {'Accept': 'application/json; charset=utf-8'}
-
         response = requests.request(
-            verb, url, allow_redirects=False, params=params, data=data, headers=headers,
+            verb, url, allow_redirects=False, params=params, data=data, json=json, headers=headers,
             timeout=self.timeout)
 
         log.debug('response %s: %s', response.status_code, repr(response.text))
