@@ -744,6 +744,8 @@ class DiscourseClient(object):
         kwargs['automatic'] = automatic
         kwargs['automatic_membership_email_domains'] = automatic_membership_email_domains
         kwargs['grant_trust_level'] = grant_trust_level
+        # Discourse v.1.7.0
+        kwargs = {'group': kwargs}
 
         return self._post("/admin/groups", json=True, **kwargs)
 
