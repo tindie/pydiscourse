@@ -734,7 +734,7 @@ class DiscourseClient(object):
         """
         return self._delete(u'/categories/{0}'.format(category_id), **kwargs)
 
-    def site_settings(self, settings, **kwargs):
+    def site_settings(self, **kwargs):
         """
 
         Args:
@@ -744,7 +744,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        for setting, value in settings.items():
+        for setting, value in kwargs.items():
             setting = setting.replace(' ', '_')
             self._request(PUT, '/admin/site_settings/{0}'.format(setting), {setting: value})
 
