@@ -189,6 +189,8 @@ class DiscourseClient(object):
     def update_avatar_image(self, username, img, **kwargs):
         """
 
+        Specify avatar using a URL
+
         Args:
             username:
             img:
@@ -501,6 +503,7 @@ class DiscourseClient(object):
 
     def update_topic(self, topic_url, title, **kwargs):
         """
+        Update a topic 
 
         Args:
             topic_url:
@@ -535,6 +538,7 @@ class DiscourseClient(object):
 
     def update_topic_status(self, topic_id, status, enabled, **kwargs):
         """
+        Open or close a topic
 
         Args:
             topic_id:
@@ -647,6 +651,7 @@ class DiscourseClient(object):
 
     def user_emails(self, username, **kwargs):
         """
+        Retrieve list of users email addresses
 
         Args:
             username:
@@ -724,6 +729,7 @@ class DiscourseClient(object):
 
     def delete_category(self, category_id, **kwargs):
         """
+        Remove category
 
         Args:
             category_id:
@@ -750,6 +756,7 @@ class DiscourseClient(object):
 
     def customize_site_texts(self, site_texts, **kwargs):
         """
+        Set Text Content for site
 
         Args:
             site_texts:
@@ -979,6 +986,7 @@ class DiscourseClient(object):
 
     def color_schemes(self, **kwargs):
         """
+        List color schemes in site
 
         Args:
             **kwargs:
@@ -990,6 +998,7 @@ class DiscourseClient(object):
 
     def create_color_scheme(self, name, enabled, colors, **kwargs):
         """
+        Create new color scheme
 
         Args:
             name:
@@ -1012,6 +1021,7 @@ class DiscourseClient(object):
 
     def create_site_customization(self, name, enabled, stylesheet, **kwargs):
         """
+        Add a new Theme
 
         Args:
             name:
@@ -1033,6 +1043,7 @@ class DiscourseClient(object):
 
     def trust_level_lock(self, user_id, locked, **kwargs):
         """
+        Lock user to current trust level
 
         Args:
             user_id:
@@ -1050,6 +1061,8 @@ class DiscourseClient(object):
 
     def block(self, user_id, **kwargs):
         """
+        Prevent user from creating topics or replying to posts.
+        To prevent users logging in use suspend()
 
         Args:
             userid:
@@ -1061,6 +1074,7 @@ class DiscourseClient(object):
 
     def upload_image(self, image, type, synchronous, **kwargs):
         """
+        Upload image or avatar
 
         Args:
             name:
@@ -1082,6 +1096,7 @@ class DiscourseClient(object):
 
     def user_actions(self, username, filter, offset=0, **kwargs):
         """
+        List all possible user actions
 
         Args:
             username:
@@ -1098,6 +1113,7 @@ class DiscourseClient(object):
 
     def tag_group(self, name, tag_names, parent_tag_name=None, **kwargs):
         """
+        Create a new tag group
 
         Args:
             name:
