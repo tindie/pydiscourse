@@ -22,7 +22,7 @@ setup(
     url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
     install_requires=[
-        'requests>=2.0.0',
+        'requests>=2.4.2',
     ],
     tests_require=[
         'mock',
