@@ -3,13 +3,17 @@ Core API client module
 """
 
 import logging
+import time
 
 import requests
 
 from datetime import timedelta, datetime
 
 from pydiscourse.exceptions import (
-    DiscourseError, DiscourseServerError, DiscourseClientError
+    DiscourseError,
+    DiscourseServerError,
+    DiscourseClientError,
+    DiscourseRateLimitedError,
 )
 from pydiscourse.sso import sso_payload
 
@@ -167,7 +171,8 @@ class DiscourseClient(object):
         suspend_until = (datetime.now() + timedelta(days=duration)).isoformat()
         return self._put(
             "/admin/users/{0}/suspend".format(userid),
-            suspend_until=suspend_until, reason=reason
+            suspend_until=suspend_until,
+            reason=reason,
         )
 
     def unsuspend(self, userid):
@@ -567,7 +572,7 @@ class DiscourseClient(object):
 
     def update_topic(self, topic_url, title, **kwargs):
         """
-        Update a topic 
+        Update a topic
 
         Args:
             topic_url:
@@ -742,7 +747,7 @@ class DiscourseClient(object):
             text_color: hex color without number symbol
             permissions: dict of 'everyone', 'admins', 'moderators', 'staff' with values of ???
             parent: name of the category
-            parent_category_id: 
+            parent_category_id:
             **kwargs:
 
         Returns:
@@ -1306,32 +1311,64 @@ class DiscourseClient(object):
         url = self.host + path
 
         headers = {"Accept": "application/json; charset=utf-8"}
-        response = requests.request(
-            verb,
-            url,
-            allow_redirects=False,
-            params=params,
-            files=files,
-            data=data,
-            json=json,
-            headers=headers,
-            timeout=self.timeout,
-        )
 
-        log.debug("response %s: %s", response.status_code, repr(response.text))
-        if not response.ok:
-            try:
-                msg = u",".join(response.json()["errors"])
-            except (ValueError, TypeError, KeyError):
-                if response.reason:
-                    msg = response.reason
-                else:
-                    msg = u"{0}: {1}".format(response.status_code, response.text)
+        # How many times should we retry if rate limited
+        retry_count = 4
+        # Extra time (on top of that required by API) to wait on a retry.
+        retry_backoff = 1
 
-            if 400 <= response.status_code < 500:
-                raise DiscourseClientError(msg, response=response)
+        while retry_count > 0:
+            response = requests.request(
+                verb,
+                url,
+                allow_redirects=False,
+                params=params,
+                files=files,
+                data=data,
+                json=json,
+                headers=headers,
+                timeout=self.timeout,
+            )
 
-            raise DiscourseServerError(msg, response=response)
+            log.debug("response %s: %s", response.status_code, repr(response.text))
+            if not response.ok:
+                try:
+                    msg = u",".join(response.json()["errors"])
+                except (ValueError, TypeError, KeyError):
+                    if response.reason:
+                        msg = response.reason
+                    else:
+                        msg = u"{0}: {1}".format(response.status_code, response.text)
+
+                if 400 <= response.status_code < 500:
+                    if 429 == response.status_code:
+                        # This codepath relies on wait_seconds from Discourse v2.0.0.beta3 / v1.9.3 or higher.
+                        rj = response.json()
+                        wait_delay = (
+                            retry_backoff + rj["extras"]["wait_seconds"]
+                        )  # how long to back off for.
+
+                        if retry_count > 1:
+                            time.sleep(wait_delay)
+                        retry_count -= 1
+                        log.info(
+                            "We have been rate limited and waited {0} seconds ({1} retries left)".format(
+                                wait_delay, retry_count
+                            )
+                        )
+                        log.debug("API returned {0}".format(rj))
+                        continue
+                    else:
+                        raise DiscourseClientError(msg, response=response)
+
+                # Any other response.ok resulting in False
+                raise DiscourseServerError(msg, response=response)
+
+        if retry_count == 0:
+            raise DiscourseRateLimitedError(
+                "Number of rate limit retries exceeded. Increase retry_backoff or retry_count",
+                response=response,
+            )
 
         if response.status_code == 302:
             raise DiscourseError(
