@@ -204,7 +204,7 @@ class DiscourseClient(object):
         if parent:
             name = u'{0}/{1}'.format(parent, name)
 
-        return self._get(u'/category/{0}.json'.format(name), **kwargs)
+        return self._get(u'/c/{0}.json'.format(name), **kwargs)
 
     def site_settings(self, **kwargs):
         for setting, value in kwargs.items():
