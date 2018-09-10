@@ -433,6 +433,9 @@ class DiscourseClient(object):
         """
         return self._delete("/admin/users/{0}.json".format(userid), **kwargs)
 
+    def delete_category(self, categoryid_or_slug, **kwargs):
+        return self._delete('/categories/{0}'.format(categoryid_or_slug), **kwargs)
+
     def users(self, filter=None, **kwargs):
         """
 
