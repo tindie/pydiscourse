@@ -3,6 +3,36 @@
 Release history
 ===============
 
+0.8.0
+-----
+
+- Add some PR guidance
+- Add support for files in the core request methods
+- Adds numerous new API controls, including:
+   - tag_group
+   - user_actions
+   - upload_image
+   - block
+   - trust_level_lock
+   - create_site_customization (theme)
+   - create_color_scheme
+   - color_schemes
+   - add_group_members
+   - group_members
+   - group_owners
+   - delete_group
+   - create_group
+   - group
+   - customize_site_texts
+   - delete_category
+   - user_emails
+   - update_topic_status
+   - create_post
+   - update_topic
+   - update_avatar
+   - user_all
+
+
 0.7.0
 -----
 
