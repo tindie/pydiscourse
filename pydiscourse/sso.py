@@ -45,34 +45,36 @@ def sso_validate(payload, signature, secret):
         return value: The nonce used by discourse to validate the redirect URL
     """
     if None in [payload, signature]:
-        raise DiscourseError('No SSO payload or signature.')
+        raise DiscourseError("No SSO payload or signature.")
 
     if not secret:
-        raise DiscourseError('Invalid secret..')
+        raise DiscourseError("Invalid secret..")
 
     payload = unquote(payload)
     if not payload:
-        raise DiscourseError('Invalid payload..')
+        raise DiscourseError("Invalid payload..")
 
-    decoded = b64decode(payload.encode('utf-8')).decode('utf-8')
-    if 'nonce' not in decoded:
-        raise DiscourseError('Invalid payload..')
+    decoded = b64decode(payload.encode("utf-8")).decode("utf-8")
+    if "nonce" not in decoded:
+        raise DiscourseError("Invalid payload..")
 
-    h = hmac.new(secret.encode('utf-8'), payload.encode('utf-8'), digestmod=hashlib.sha256)
+    h = hmac.new(
+        secret.encode("utf-8"), payload.encode("utf-8"), digestmod=hashlib.sha256
+    )
     this_signature = h.hexdigest()
 
     if this_signature != signature:
-        raise DiscourseError('Payload does not match signature.')
+        raise DiscourseError("Payload does not match signature.")
 
     # Discourse returns querystring encoded value. We only need `nonce`
     qs = parse_qs(decoded)
-    return qs['nonce'][0]
+    return qs["nonce"][0]
 
 
 def sso_payload(secret, **kwargs):
-    return_payload = b64encode(urlencode(kwargs).encode('utf-8'))
-    h = hmac.new(secret.encode('utf-8'), return_payload, digestmod=hashlib.sha256)
-    query_string = urlencode({'sso': return_payload, 'sig': h.hexdigest()})
+    return_payload = b64encode(urlencode(kwargs).encode("utf-8"))
+    h = hmac.new(secret.encode("utf-8"), return_payload, digestmod=hashlib.sha256)
+    query_string = urlencode({"sso": return_payload, "sig": h.hexdigest()})
     return query_string
 
 
@@ -86,11 +88,13 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
 
         return value: URL to redirect users back to discourse, now logged in as user_username
     """
-    kwargs.update({
-        'nonce': nonce,
-        'email': email,
-        'external_id': external_id,
-        'username': username
-    })
+    kwargs.update(
+        {
+            "nonce": nonce,
+            "email": email,
+            "external_id": external_id,
+            "username": username,
+        }
+    )
 
-    return '/session/sso_login?%s' % sso_payload(secret, **kwargs)
+    return "/session/sso_login?%s" % sso_payload(secret, **kwargs)

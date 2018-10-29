@@ -7,11 +7,12 @@ import logging
 import requests
 
 from pydiscourse.exceptions import (
-    DiscourseError, DiscourseServerError, DiscourseClientError)
+    DiscourseError, DiscourseServerError, DiscourseClientError
+)
 from pydiscourse.sso import sso_payload
 
 
-log = logging.getLogger('pydiscourse.client')
+log = logging.getLogger("pydiscourse.client")
 
 # HTTP verbs to be used as non string literals
 DELETE = "DELETE"
@@ -55,7 +56,7 @@ class DiscourseClient(object):
             dict of user information
 
         """
-        return self._get('/users/{0}.json'.format(username))['user']
+        return self._get("/users/{0}.json".format(username))["user"]
 
     def user_all(self, user_id):
         """
@@ -66,7 +67,7 @@ class DiscourseClient(object):
         Returns:
             dict of user information
         """
-        return self._get('/admin/users/{0}.json'.format(user_id))
+        return self._get("/admin/users/{0}.json".format(user_id))
 
     def create_user(self, name, username, email, password, **kwargs):
         """
@@ -87,12 +88,19 @@ class DiscourseClient(object):
             ????
 
         """
-        r = self._get('/users/hp.json')
-        challenge = r['challenge'][::-1]  # reverse challenge, discourse security check
-        confirmations = r['value']
-        return self._post('/users', name=name, username=username, email=email,
-                          password=password, password_confirmation=confirmations,
-                          challenge=challenge, **kwargs)
+        r = self._get("/users/hp.json")
+        challenge = r["challenge"][::-1]  # reverse challenge, discourse security check
+        confirmations = r["value"]
+        return self._post(
+            "/users",
+            name=name,
+            username=username,
+            email=email,
+            password=password,
+            password_confirmation=confirmations,
+            challenge=challenge,
+            **kwargs
+        )
 
     def user_by_external_id(self, external_id):
         """
@@ -104,7 +112,8 @@ class DiscourseClient(object):
 
         """
         response = self._get("/users/by-external/{0}".format(external_id))
-        return response['user']
+        return response["user"]
+
     by_external_id = user_by_external_id
 
     def log_out(self, userid):
@@ -116,7 +125,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._post('/admin/users/{0}/log_out'.format(userid))
+        return self._post("/admin/users/{0}/log_out".format(userid))
 
     def trust_level(self, userid, level):
         """
@@ -128,7 +137,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/admin/users/{0}/trust_level'.format(userid), level=level)
+        return self._put("/admin/users/{0}/trust_level".format(userid), level=level)
 
     def suspend(self, userid, duration, reason):
         """
@@ -144,8 +153,9 @@ class DiscourseClient(object):
             ????
 
         """
-        return self._put('/admin/users/{0}/suspend'.format(userid),
-                         duration=duration, reason=reason)
+        return self._put(
+            "/admin/users/{0}/suspend".format(userid), duration=duration, reason=reason
+        )
 
     def unsuspend(self, userid):
         """
@@ -157,7 +167,7 @@ class DiscourseClient(object):
         Returns:
             None???
         """
-        return self._put('/admin/users/{0}/unsuspend'.format(userid))
+        return self._put("/admin/users/{0}/unsuspend".format(userid))
 
     def list_users(self, type, **kwargs):
         """
@@ -171,7 +181,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/admin/users/list/{0}.json'.format(type), **kwargs)
+        return self._get("/admin/users/list/{0}.json".format(type), **kwargs)
 
     def update_avatar_from_url(self, username, url, **kwargs):
         """
@@ -184,7 +194,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._post('/users/{0}/preferences/avatar'.format(username), file=url, **kwargs)
+        return self._post(
+            "/users/{0}/preferences/avatar".format(username), file=url, **kwargs
+        )
 
     def update_avatar_image(self, username, img, **kwargs):
         """
@@ -199,8 +211,10 @@ class DiscourseClient(object):
         Returns:
 
         """
-        files = {'file': img}
-        return self._post('/users/{0}/preferences/avatar'.format(username), files=files, **kwargs)
+        files = {"file": img}
+        return self._post(
+            "/users/{0}/preferences/avatar".format(username), files=files, **kwargs
+        )
 
     def toggle_gravatar(self, username, state=True, **kwargs):
         """
@@ -213,11 +227,11 @@ class DiscourseClient(object):
         Returns:
 
         """
-        url = '/users/{0}/preferences/avatar/toggle'.format(username)
+        url = "/users/{0}/preferences/avatar/toggle".format(username)
         if bool(state):
-            kwargs['use_uploaded_avatar'] = 'true'
+            kwargs["use_uploaded_avatar"] = "true"
         else:
-            kwargs['use_uploaded_avatar'] = 'false'
+            kwargs["use_uploaded_avatar"] = "false"
         return self._put(url, **kwargs)
 
     def pick_avatar(self, username, gravatar=True, generated=False, **kwargs):
@@ -232,7 +246,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        url = '/users/{0}/preferences/avatar/pick'.format(username)
+        url = "/users/{0}/preferences/avatar/pick".format(username)
         return self._put(url, **kwargs)
 
     def update_avatar(self, username, url, **kwargs):
@@ -246,11 +260,14 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['type'] = 'avatar'
-        kwargs['synchronous'] = 'true'
-        upload_response = self._post('/uploads', url=url, **kwargs)
-        return self._put('/users/{0}/preferences/avatar/pick'.format(username),
-                         upload_id=upload_response['id'], **kwargs)
+        kwargs["type"] = "avatar"
+        kwargs["synchronous"] = "true"
+        upload_response = self._post("/uploads", url=url, **kwargs)
+        return self._put(
+            "/users/{0}/preferences/avatar/pick".format(username),
+            upload_id=upload_response["id"],
+            **kwargs
+        )
 
     def update_email(self, username, email, **kwargs):
         """
@@ -263,7 +280,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/users/{0}/preferences/email'.format(username), email=email, **kwargs)
+        return self._put(
+            "/users/{0}/preferences/email".format(username), email=email, **kwargs
+        )
 
     def update_user(self, username, **kwargs):
         """
@@ -275,7 +294,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/users/{0}'.format(username), json=True, **kwargs)
+        return self._put("/users/{0}".format(username), json=True, **kwargs)
 
     def update_username(self, username, new_username, **kwargs):
         """
@@ -288,8 +307,11 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/users/{0}/preferences/username'.format(username),
-                         username=new_username, **kwargs)
+        return self._put(
+            "/users/{0}/preferences/username".format(username),
+            username=new_username,
+            **kwargs
+        )
 
     def set_preference(self, username=None, **kwargs):
         """
@@ -303,7 +325,7 @@ class DiscourseClient(object):
         """
         if username is None:
             username = self.api_username
-        return self._put(u'/users/{0}'.format(username), **kwargs)
+        return self._put(u"/users/{0}".format(username), **kwargs)
 
     def sync_sso(self, **kwargs):
         """
@@ -317,9 +339,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        sso_secret = kwargs.pop('sso_secret')
+        sso_secret = kwargs.pop("sso_secret")
         payload = sso_payload(sso_secret, **kwargs)
-        return self._post('/admin/users/sync_sso?{0}'.format(payload), **kwargs)
+        return self._post("/admin/users/sync_sso?{0}".format(payload), **kwargs)
 
     def generate_api_key(self, userid, **kwargs):
         """
@@ -331,7 +353,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._post('/admin/users/{0}/generate_api_key'.format(userid), **kwargs)
+        return self._post("/admin/users/{0}/generate_api_key".format(userid), **kwargs)
 
     def delete_user(self, userid, **kwargs):
         """
@@ -347,7 +369,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._delete('/admin/users/{0}.json'.format(userid), **kwargs)
+        return self._delete("/admin/users/{0}.json".format(userid), **kwargs)
 
     def users(self, filter=None, **kwargs):
         """
@@ -360,9 +382,9 @@ class DiscourseClient(object):
 
         """
         if filter is None:
-            filter = 'active'
+            filter = "active"
 
-        return self._get('/admin/users/list/{0}.json'.format(filter), **kwargs)
+        return self._get("/admin/users/list/{0}.json".format(filter), **kwargs)
 
     def private_messages(self, username=None, **kwargs):
         """
@@ -376,7 +398,7 @@ class DiscourseClient(object):
         """
         if username is None:
             username = self.api_username
-        return self._get('/topics/private-messages/{0}.json'.format(username), **kwargs)
+        return self._get("/topics/private-messages/{0}.json".format(username), **kwargs)
 
     def private_messages_unread(self, username=None, **kwargs):
         """
@@ -390,7 +412,9 @@ class DiscourseClient(object):
         """
         if username is None:
             username = self.api_username
-        return self._get('/topics/private-messages-unread/{0}.json'.format(username), **kwargs)
+        return self._get(
+            "/topics/private-messages-unread/{0}.json".format(username), **kwargs
+        )
 
     def hot_topics(self, **kwargs):
         """
@@ -401,7 +425,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/hot.json', **kwargs)
+        return self._get("/hot.json", **kwargs)
 
     def latest_topics(self, **kwargs):
         """
@@ -412,7 +436,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/latest.json', **kwargs)
+        return self._get("/latest.json", **kwargs)
 
     def new_topics(self, **kwargs):
         """
@@ -423,7 +447,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/new.json', **kwargs)
+        return self._get("/new.json", **kwargs)
 
     def topic(self, slug, topic_id, **kwargs):
         """
@@ -436,7 +460,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/t/{0}/{1}.json'.format(slug, topic_id), **kwargs)
+        return self._get("/t/{0}/{1}.json".format(slug, topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         """
@@ -449,7 +473,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/t/{0}/{1}.json'.format(topic_id, post_id), **kwargs)
+        return self._get("/t/{0}/{1}.json".format(topic_id, post_id), **kwargs)
 
     def posts(self, topic_id, post_ids=None, **kwargs):
         """
@@ -464,8 +488,8 @@ class DiscourseClient(object):
 
         """
         if post_ids:
-            kwargs['post_ids[]'] = post_ids
-        return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
+            kwargs["post_ids[]"] = post_ids
+        return self._get("/t/{0}/posts.json".format(topic_id), **kwargs)
 
     def topic_timings(self, topic_id, time, timings={}, **kwargs):
         """
@@ -482,12 +506,12 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['topic_id'] = topic_id
-        kwargs['topic_time'] = time
+        kwargs["topic_id"] = topic_id
+        kwargs["topic_time"] = time
         for post_num, timing in timings.items():
-            kwargs['timings[{0}]'.format(post_num)] = timing
+            kwargs["timings[{0}]".format(post_num)] = timing
 
-        return self._post('/topics/timings', **kwargs)
+        return self._post("/topics/timings", **kwargs)
 
     def topic_posts(self, topic_id, **kwargs):
         """
@@ -499,7 +523,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/t/{0}/posts.json'.format(topic_id), **kwargs)
+        return self._get("/t/{0}/posts.json".format(topic_id), **kwargs)
 
     def update_topic(self, topic_url, title, **kwargs):
         """
@@ -513,11 +537,12 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['title'] = title
-        return self._put('{}'.format(topic_url), **kwargs)
+        kwargs["title"] = title
+        return self._put("{}".format(topic_url), **kwargs)
 
-    def create_post(self, content, category_id=None, topic_id=None,
-                    title=None, tags=[], **kwargs):
+    def create_post(
+        self, content, category_id=None, topic_id=None, title=None, tags=[], **kwargs
+    ):
         """
 
         Args:
@@ -532,9 +557,15 @@ class DiscourseClient(object):
 
         """
         if tags:
-            kwargs['tags[]'] = tags
-        return self._post('/posts', category=category_id, title=title,
-                          raw=content, topic_id=topic_id, **kwargs)
+            kwargs["tags[]"] = tags
+        return self._post(
+            "/posts",
+            category=category_id,
+            title=title,
+            raw=content,
+            topic_id=topic_id,
+            **kwargs
+        )
 
     def update_topic_status(self, topic_id, status, enabled, **kwargs):
         """
@@ -549,14 +580,14 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['status'] = status
+        kwargs["status"] = status
         if bool(enabled):
-            kwargs['enabled'] = 'true'
+            kwargs["enabled"] = "true"
         else:
-            kwargs['enabled'] = 'false'
-        return self._put('/t/{0}/status'.format(topic_id), **kwargs)
+            kwargs["enabled"] = "false"
+        return self._put("/t/{0}/status".format(topic_id), **kwargs)
 
-    def update_post(self, post_id, content, edit_reason='', **kwargs):
+    def update_post(self, post_id, content, edit_reason="", **kwargs):
         """
 
         Args:
@@ -568,9 +599,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['post[raw]'] = content
-        kwargs['post[edit_reason]'] = edit_reason
-        return self._put('/posts/{0}'.format(post_id), **kwargs)
+        kwargs["post[raw]"] = content
+        kwargs["post[edit_reason]"] = edit_reason
+        return self._put("/posts/{0}".format(post_id), **kwargs)
 
     def topics_by(self, username, **kwargs):
         """
@@ -582,8 +613,8 @@ class DiscourseClient(object):
         Returns:
 
         """
-        url = '/topics/created-by/{0}.json'.format(username)
-        return self._get(url, **kwargs)['topic_list']['topics']
+        url = "/topics/created-by/{0}.json".format(username)
+        return self._get(url, **kwargs)["topic_list"]["topics"]
 
     def invite_user_to_topic(self, user_email, topic_id):
         """
@@ -595,11 +626,8 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs = {
-            'email': user_email,
-            'topic_id': topic_id,
-        }
-        return self._post('/t/{0}/invite.json'.format(topic_id), **kwargs)
+        kwargs = {"email": user_email, "topic_id": topic_id}
+        return self._post("/t/{0}/invite.json".format(topic_id), **kwargs)
 
     def search(self, term, **kwargs):
         """
@@ -611,8 +639,8 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['term'] = term
-        return self._get('/search.json', **kwargs)
+        kwargs["term"] = term
+        return self._get("/search.json", **kwargs)
 
     def badges(self, **kwargs):
         """
@@ -623,7 +651,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/admin/badges.json', **kwargs)
+        return self._get("/admin/badges.json", **kwargs)
 
     def grant_badge_to(self, username, badge_id, **kwargs):
         """
@@ -636,7 +664,9 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._post('/user_badges', username=username, badge_id=badge_id, **kwargs)
+        return self._post(
+            "/user_badges", username=username, badge_id=badge_id, **kwargs
+        )
 
     def user_badges(self, username, **kwargs):
         """
@@ -647,7 +677,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/user-badges/{}.json'.format(username))
+        return self._get("/user-badges/{}.json".format(username))
 
     def user_emails(self, username, **kwargs):
         """
@@ -659,10 +689,11 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/u/{}/emails.json'.format(username))
+        return self._get("/u/{}/emails.json".format(username))
 
-    def create_category(self, name, color, text_color='FFFFFF',
-                        permissions=None, parent=None, **kwargs):
+    def create_category(
+        self, name, color, text_color="FFFFFF", permissions=None, parent=None, **kwargs
+    ):
         """
 
         Args:
@@ -677,28 +708,29 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['name'] = name
-        kwargs['color'] = color
-        kwargs['text_color'] = text_color
+        kwargs["name"] = name
+        kwargs["color"] = color
+        kwargs["text_color"] = text_color
 
-        if permissions is None and 'permissions' not in kwargs:
-            permissions = {'everyone': '1'}
+        if permissions is None and "permissions" not in kwargs:
+            permissions = {"everyone": "1"}
 
         for key, value in permissions.items():
-            kwargs['permissions[{0}]'.format(key)] = value
+            kwargs["permissions[{0}]".format(key)] = value
 
         if parent:
             parent_id = None
             for category in self.categories():
-                if category['name'] == parent:
-                    parent_id = category['id']
+                if category["name"] == parent:
+                    parent_id = category["id"]
                     continue
 
             if not parent_id:
-                raise DiscourseClientError(u'{0} not found'.format(parent))
-            kwargs['parent_category_id'] = parent_id
+                raise DiscourseClientError(u"{0} not found".format(parent))
 
-        return self._post('/categories', **kwargs)
+            kwargs["parent_category_id"] = parent_id
+
+        return self._post("/categories", **kwargs)
 
     def categories(self, **kwargs):
         """
@@ -709,7 +741,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/categories.json', **kwargs)['category_list']['categories']
+        return self._get("/categories.json", **kwargs)["category_list"]["categories"]
 
     def category(self, name, parent=None, **kwargs):
         """
@@ -723,9 +755,9 @@ class DiscourseClient(object):
 
         """
         if parent:
-            name = u'{0}/{1}'.format(parent, name)
+            name = u"{0}/{1}".format(parent, name)
 
-        return self._get(u'/category/{0}.json'.format(name), **kwargs)
+        return self._get(u"/category/{0}.json".format(name), **kwargs)
 
     def delete_category(self, category_id, **kwargs):
         """
@@ -738,7 +770,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._delete(u'/categories/{0}'.format(category_id), **kwargs)
+        return self._delete(u"/categories/{0}".format(category_id), **kwargs)
 
     def site_settings(self, **kwargs):
         """
@@ -751,8 +783,10 @@ class DiscourseClient(object):
 
         """
         for setting, value in kwargs.items():
-            setting = setting.replace(' ', '_')
-            self._request(PUT, '/admin/site_settings/{0}'.format(setting), {setting: value})
+            setting = setting.replace(" ", "_")
+            self._request(
+                PUT, "/admin/site_settings/{0}".format(setting), {setting: value}
+            )
 
     def customize_site_texts(self, site_texts, **kwargs):
         """
@@ -766,8 +800,10 @@ class DiscourseClient(object):
 
         """
         for site_text, value in site_texts.items():
-            kwargs = {'site_text': {'value': value}}
-            self._put('/admin/customize/site_texts/{0}'.format(site_text), json=True, **kwargs)
+            kwargs = {"site_text": {"value": value}}
+            self._put(
+                "/admin/customize/site_texts/{0}".format(site_text), json=True, **kwargs
+            )
 
     def groups(self, **kwargs):
         """
@@ -822,7 +858,22 @@ class DiscourseClient(object):
         """
         return self._get("/groups/{0}/members.json".format(group_name))
 
-    def create_group(self, name, title="", visible=True, alias_level=0, automatic_membership_retroactive=False, primary_group=False, automatic=False, automatic_membership_email_domains="", grant_trust_level=1, flair_url=None, flair_bg_color=None, flair_color=None, **kwargs):
+    def create_group(
+        self,
+        name,
+        title="",
+        visible=True,
+        alias_level=0,
+        automatic_membership_retroactive=False,
+        primary_group=False,
+        automatic=False,
+        automatic_membership_email_domains="",
+        grant_trust_level=1,
+        flair_url=None,
+        flair_bg_color=None,
+        flair_color=None,
+        **kwargs
+    ):
         """
         Args:
 
@@ -840,20 +891,22 @@ class DiscourseClient(object):
             flair_color: Avatar Flair Color
 
         """
-        kwargs['name'] = name
-        kwargs['title'] = title
-        kwargs['visible'] = visible
-        kwargs['alias_level'] = alias_level
-        kwargs['automatic_membership_retroactive'] = automatic_membership_retroactive
-        kwargs['primary_group'] = primary_group
-        kwargs['automatic'] = automatic
-        kwargs['automatic_membership_email_domains'] = automatic_membership_email_domains
-        kwargs['grant_trust_level'] = grant_trust_level
-        kwargs['flair_url'] = flair_url
-        kwargs['flair_bg_color'] = flair_bg_color
-        kwargs['flair_color'] = flair_color
+        kwargs["name"] = name
+        kwargs["title"] = title
+        kwargs["visible"] = visible
+        kwargs["alias_level"] = alias_level
+        kwargs["automatic_membership_retroactive"] = automatic_membership_retroactive
+        kwargs["primary_group"] = primary_group
+        kwargs["automatic"] = automatic
+        kwargs[
+            "automatic_membership_email_domains"
+        ] = automatic_membership_email_domains
+        kwargs["grant_trust_level"] = grant_trust_level
+        kwargs["flair_url"] = flair_url
+        kwargs["flair_bg_color"] = flair_bg_color
+        kwargs["flair_color"] = flair_color
         # Discourse v.1.7.0
-        kwargs = {'group': kwargs}
+        kwargs = {"group": kwargs}
 
         return self._post("/admin/groups", json=True, **kwargs)
 
@@ -882,7 +935,9 @@ class DiscourseClient(object):
             JSON API response
 
         """
-        return self._put("/admin/groups/{0}/owners.json".format(groupid), usernames=username)
+        return self._put(
+            "/admin/groups/{0}/owners.json".format(groupid), usernames=username
+        )
 
     def delete_group_owner(self, groupid, userid):
         """
@@ -898,22 +953,24 @@ class DiscourseClient(object):
             JSON API response
 
         """
-        return self._delete("/admin/groups/{0}/owners.json".format(groupid), user_id=userid)
+        return self._delete(
+            "/admin/groups/{0}/owners.json".format(groupid), user_id=userid
+        )
 
     def group_owners(self, group_name):
         """
         Get all owners of a group by group name
         """
         group = self._get("/groups/{0}/members.json".format(group_name))
-        return group['owners']
+        return group["owners"]
 
     def group_members(self, group_name, offset=0, **kwargs):
         """
         Get all members of a group by group name
         """
-        kwargs['offset'] = offset
+        kwargs["offset"] = offset
         group = self._get("/groups/{0}/members.json".format(group_name), **kwargs)
-        return group['members']
+        return group["members"]
 
     def add_group_member(self, groupid, username):
         """
@@ -930,7 +987,9 @@ class DiscourseClient(object):
             DiscourseError if user is already member of group
 
         """
-        return self._put("/admin/groups/{0}/members.json".format(groupid), usernames=username)
+        return self._put(
+            "/admin/groups/{0}/members.json".format(groupid), usernames=username
+        )
 
     def add_group_members(self, groupid, usernames):
         """
@@ -947,9 +1006,10 @@ class DiscourseClient(object):
             DiscourseError if any of the users is already member of group
 
         """
-        usernames = ','.join(usernames)
-        return self._put("/admin/groups/{0}/members.json".format(groupid), usernames=usernames)
-
+        usernames = ",".join(usernames)
+        return self._put(
+            "/admin/groups/{0}/members.json".format(groupid), usernames=usernames
+        )
 
     def add_user_to_group(self, groupid, userid):
         """
@@ -982,7 +1042,9 @@ class DiscourseClient(object):
             JSON API response
 
         """
-        return self._delete("/admin/groups/{0}/members.json".format(groupid), user_id=userid)
+        return self._delete(
+            "/admin/groups/{0}/members.json".format(groupid), user_id=userid
+        )
 
     def color_schemes(self, **kwargs):
         """
@@ -994,7 +1056,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._get('/admin/color_schemes.json', **kwargs)
+        return self._get("/admin/color_schemes.json", **kwargs)
 
     def create_color_scheme(self, name, enabled, colors, **kwargs):
         """
@@ -1009,14 +1071,15 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['name'] = name
+        kwargs["name"] = name
         if bool(enabled):
-            kwargs['enabled'] = 'true'
+            kwargs["enabled"] = "true"
         else:
-            kwargs['enabled'] = 'false'
-        kwargs['colors'] = [{'name': name, 'hex': color}
-                            for name, color in colors.items()]
-        kwargs = {'color_scheme': kwargs}
+            kwargs["enabled"] = "false"
+        kwargs["colors"] = [
+            {"name": name, "hex": color} for name, color in colors.items()
+        ]
+        kwargs = {"color_scheme": kwargs}
         return self._post("/admin/color_schemes.json", json=True, **kwargs)
 
     def create_site_customization(self, name, enabled, stylesheet, **kwargs):
@@ -1032,13 +1095,13 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['name'] = name
+        kwargs["name"] = name
         if bool(enabled):
-            kwargs['enabled'] = 'true'
+            kwargs["enabled"] = "true"
         else:
-            kwargs['enabled'] = 'false'
-        kwargs['stylesheet'] = stylesheet
-        kwargs = {'site_customization': kwargs}
+            kwargs["enabled"] = "false"
+        kwargs["stylesheet"] = stylesheet
+        kwargs = {"site_customization": kwargs}
         return self._post("/admin/site_customizations", json=True, **kwargs)
 
     def trust_level_lock(self, user_id, locked, **kwargs):
@@ -1054,10 +1117,10 @@ class DiscourseClient(object):
 
         """
         if bool(locked):
-            kwargs['locked'] = 'true'
+            kwargs["locked"] = "true"
         else:
-            kwargs['locked'] = 'false'
-        return self._put('/admin/users/{}/trust_level_lock'.format(user_id), **kwargs)
+            kwargs["locked"] = "false"
+        return self._put("/admin/users/{}/trust_level_lock".format(user_id), **kwargs)
 
     def block(self, user_id, **kwargs):
         """
@@ -1070,7 +1133,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._put('/admin/users/{}/block'.format(user_id), **kwargs)
+        return self._put("/admin/users/{}/block".format(user_id), **kwargs)
 
     def upload_image(self, image, type, synchronous, **kwargs):
         """
@@ -1086,13 +1149,13 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['type'] = type
+        kwargs["type"] = type
         if bool(synchronous):
-            kwargs['synchronous'] = 'true'
+            kwargs["synchronous"] = "true"
         else:
-            kwargs['synchronous'] = 'false'
-        files = {'file': open(image, 'rb')}
-        return self._post('/uploads.json', files=files, **kwargs)
+            kwargs["synchronous"] = "false"
+        files = {"file": open(image, "rb")}
+        return self._post("/uploads.json", files=files, **kwargs)
 
     def user_actions(self, username, filter, offset=0, **kwargs):
         """
@@ -1106,10 +1169,10 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['username'] = username
-        kwargs['filter'] = filter
-        kwargs['offset'] = offset
-        return self._get('/user_actions.json', **kwargs)['user_actions']
+        kwargs["username"] = username
+        kwargs["filter"] = filter
+        kwargs["offset"] = offset
+        return self._get("/user_actions.json", **kwargs)["user_actions"]
 
     def tag_group(self, name, tag_names, parent_tag_name=None, **kwargs):
         """
@@ -1124,10 +1187,10 @@ class DiscourseClient(object):
         Returns:
 
         """
-        kwargs['name'] = name
-        kwargs['tag_names'] = tag_names
-        kwargs['parent_tag_name'] = parent_tag_name
-        return self._post('/tag_groups', json=True, **kwargs)['tag_group']
+        kwargs["name"] = name
+        kwargs["tag_names"] = tag_names
+        kwargs["parent_tag_name"] = parent_tag_name
+        return self._post("/tag_groups", json=True, **kwargs)["tag_group"]
 
     def _get(self, path, **kwargs):
         """
@@ -1153,6 +1216,7 @@ class DiscourseClient(object):
         """
         if not json:
             return self._request(PUT, path, data=kwargs)
+
         else:
             return self._request(PUT, path, json=kwargs)
 
@@ -1168,6 +1232,7 @@ class DiscourseClient(object):
         """
         if not json:
             return self._request(POST, path, files=files, data=kwargs)
+
         else:
             return self._request(POST, path, files=files, json=kwargs)
 
@@ -1195,25 +1260,33 @@ class DiscourseClient(object):
         Returns:
 
         """
-        params['api_key'] = self.api_key
-        if 'api_username' not in params:
-            params['api_username'] = self.api_username
+        params["api_key"] = self.api_key
+        if "api_username" not in params:
+            params["api_username"] = self.api_username
         url = self.host + path
 
-        headers = {'Accept': 'application/json; charset=utf-8'}
+        headers = {"Accept": "application/json; charset=utf-8"}
         response = requests.request(
-            verb, url, allow_redirects=False, params=params, files=files, data=data, json=json, headers=headers,
-            timeout=self.timeout)
+            verb,
+            url,
+            allow_redirects=False,
+            params=params,
+            files=files,
+            data=data,
+            json=json,
+            headers=headers,
+            timeout=self.timeout,
+        )
 
-        log.debug('response %s: %s', response.status_code, repr(response.text))
+        log.debug("response %s: %s", response.status_code, repr(response.text))
         if not response.ok:
             try:
-                msg = u','.join(response.json()['errors'])
+                msg = u",".join(response.json()["errors"])
             except (ValueError, TypeError, KeyError):
                 if response.reason:
                     msg = response.reason
                 else:
-                    msg = u'{0}: {1}'.format(response.status_code, response.text)
+                    msg = u"{0}: {1}".format(response.status_code, response.text)
 
             if 400 <= response.status_code < 500:
                 raise DiscourseClientError(msg, response=response)
@@ -1222,27 +1295,32 @@ class DiscourseClient(object):
 
         if response.status_code == 302:
             raise DiscourseError(
-                'Unexpected Redirect, invalid api key or host?', response=response)
+                "Unexpected Redirect, invalid api key or host?", response=response
+            )
 
-        json_content = 'application/json; charset=utf-8'
-        content_type = response.headers['content-type']
+        json_content = "application/json; charset=utf-8"
+        content_type = response.headers["content-type"]
         if content_type != json_content:
             # some calls return empty html documents
             if not response.content.strip():
                 return None
 
-            raise DiscourseError('Invalid Response, expecting "{0}" got "{1}"'.format(
-                                 json_content, content_type), response=response)
+            raise DiscourseError(
+                'Invalid Response, expecting "{0}" got "{1}"'.format(
+                    json_content, content_type
+                ),
+                response=response,
+            )
 
         try:
             decoded = response.json()
         except ValueError:
-            raise DiscourseError('failed to decode response', response=response)
+            raise DiscourseError("failed to decode response", response=response)
 
-        if 'errors' in decoded:
-            message = decoded.get('message')
+        if "errors" in decoded:
+            message = decoded.get("message")
             if not message:
-                message = u','.join(decoded['errors'])
+                message = u",".join(decoded["errors"])
             raise DiscourseError(message, response=response)
 
         return decoded
