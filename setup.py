@@ -8,7 +8,7 @@ with open("pydiscourse/__init__.py", "r") as module_file:
     for line in module_file:
         if line.startswith("__version__"):
             version_string = line.split("=")[1]
-            VERSION = version_string.strip().replace("'", "")
+            VERSION = version_string.strip().replace("\"", "")
 
 
 setup(
