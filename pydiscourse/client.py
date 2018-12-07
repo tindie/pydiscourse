@@ -6,6 +6,8 @@ import logging
 
 import requests
 
+from datetime import timedelta, datetime
+
 from pydiscourse.exceptions import (
     DiscourseError, DiscourseServerError, DiscourseClientError
 )
@@ -153,8 +155,10 @@ class DiscourseClient(object):
             ????
 
         """
+        suspend_until = (datetime.now() + timedelta(days=duration)).isoformat()
         return self._put(
-            "/admin/users/{0}/suspend".format(userid), duration=duration, reason=reason
+            "/admin/users/{0}/suspend".format(userid),
+            suspend_until=suspend_until, reason=reason
         )
 
     def unsuspend(self, userid):
