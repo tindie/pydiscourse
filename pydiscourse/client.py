@@ -850,7 +850,7 @@ class DiscourseClient(object):
                 ]
 
         """
-        return self._get("/admin/groups.json", **kwargs)
+        return self._get("/groups/search.json", **kwargs)
 
     def group(self, group_name):
         """
