@@ -420,6 +420,19 @@ class DiscourseClient(object):
             "/topics/private-messages-unread/{0}.json".format(username), **kwargs
         )
 
+    def category_topics(self, category_id, **kwargs):
+        """
+        Returns a list of all topics in a category.
+
+        Args:
+            **kwargs:
+
+        Returns:
+            JSON API response
+
+        """
+        return self._get("/c/{0}.json".format(category_id), **kwargs)
+
     def hot_topics(self, **kwargs):
         """
 
@@ -465,6 +478,20 @@ class DiscourseClient(object):
 
         """
         return self._get("/t/{0}/{1}.json".format(slug, topic_id), **kwargs)
+
+    def delete_topic(self, topic_id, **kwargs):
+        """
+        Remove a topic
+
+        Args:
+            category_id:
+            **kwargs:
+
+        Returns:
+            JSON API response
+
+        """
+        return self._delete(u"/t/{0}".format(topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         """
