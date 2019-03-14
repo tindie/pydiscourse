@@ -433,9 +433,6 @@ class DiscourseClient(object):
         """
         return self._delete("/admin/users/{0}.json".format(userid), **kwargs)
 
-    def delete_category(self, categoryid_or_slug, **kwargs):
-        return self._delete('/categories/{0}'.format(categoryid_or_slug), **kwargs)
-
     def users(self, filter=None, **kwargs):
         """
 
@@ -868,12 +865,18 @@ class DiscourseClient(object):
         """
         return self._delete(u"/categories/{0}".format(category_id), **kwargs)
 
+    def get_site_settings(self):
+        """
+        Get site settings
+        """
+        return self._get('/admin/site_settings.json')
+
     def site_settings(self, **kwargs):
         """
+        Update site settings
 
         Args:
-            settings:
-            **kwargs:
+            **kwargs: key-value of properties to update
 
         Returns:
 
