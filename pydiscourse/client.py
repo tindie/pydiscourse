@@ -128,6 +128,9 @@ class DiscourseClient(object):
             **kwargs
         )
 
+    def user_emails(self, username):
+        return self._get('/u/{0}/emails.json'.format(username))
+
     def create_user(self, name, username, email, password, **kwargs):
         """
         Create a Discourse user
