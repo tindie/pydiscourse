@@ -903,7 +903,6 @@ class DiscourseClient(object):
         Args:
             site_texts:
             **kwargs:
-
         Returns:
 
         """
@@ -1299,6 +1298,14 @@ class DiscourseClient(object):
         kwargs["tag_names"] = tag_names
         kwargs["parent_tag_name"] = parent_tag_name
         return self._post("/tag_groups", json=True, **kwargs)["tag_group"]
+
+    def data_explorer_query(self, query_id, **kwargs):
+        """
+        Run a query with database explorer plugin.
+        Requires discourse-data-explorer installed
+        https://github.com/discourse/discourse-data-explorer
+        """
+        return self._post('/admin/plugins/explorer/queries/{}/run'.format(query_id), **kwargs)
 
     def _get(self, path, override_request_kwargs=None, **kwargs):
         """
