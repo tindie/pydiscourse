@@ -179,7 +179,7 @@ class TestTopics(ClientBaseTestCase):
         )
 
 
-@mock.patch("requests.request")
+@mock.patch("pydiscourse.client.requests.request")
 class MiscellaneousTests(ClientBaseTestCase):
 
     def test_search(self, request):

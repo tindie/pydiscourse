@@ -1331,6 +1331,8 @@ class DiscourseClient(object):
             )
 
             log.debug("response %s: %s", response.status_code, repr(response.text))
+            if response.ok:
+                break
             if not response.ok:
                 try:
                     msg = u",".join(response.json()["errors"])
