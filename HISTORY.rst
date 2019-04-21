@@ -3,6 +3,12 @@
 Release history
 ===============
 
+0.9.0
+-----
+
+- Added rate limiting support
+- Added some support for user activation
+
 0.8.0
 -----
 
