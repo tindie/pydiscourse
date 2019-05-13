@@ -128,6 +128,9 @@ class DiscourseClient(object):
             **kwargs
         )
 
+    def user_by_id(self, pk):
+        return self._get('/admin/users/{0}.json'.format(pk))
+
     def user_by_email(self, email):
         return self._get('/admin/users/list/all.json?email={0}'.format(email))
 
