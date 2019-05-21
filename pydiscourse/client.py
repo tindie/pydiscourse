@@ -504,6 +504,7 @@ class DiscourseClient(object):
             **kwargs
         )
 
+    # Doesn't work on recent Discourse versions
     def hot_topics(self, **kwargs):
         """
 
@@ -514,6 +515,9 @@ class DiscourseClient(object):
 
         """
         return self._get("/hot.json", **kwargs)
+
+    def top_topics(self, **kwargs):
+        return self._get('/top.json', **kwargs)
 
     def latest_topics(self, **kwargs):
         """
