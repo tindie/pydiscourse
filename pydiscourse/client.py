@@ -442,6 +442,9 @@ class DiscourseClient(object):
         """
         return self._delete("/admin/users/{0}.json".format(userid), **kwargs)
 
+    def delete_topic(self, topic_id, **kwargs):
+        return self._delete('/t/{0}'.format(topic_id), **kwargs)
+
     def users(self, filter=None, **kwargs):
         """
 
