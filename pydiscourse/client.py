@@ -68,10 +68,10 @@ class DiscourseClient(object):
         return self._get("/admin/users/{0}/approve.json".format(user_id))
 
     def activate(self, user_id):
-        return self._get("/admin/users/{0}/activate.json".format(user_id))
+        return self._put("/admin/users/{0}/activate.json".format(user_id))
 
     def deactivate(self, user_id):
-        return self._get("/admin/users/{0}/deactivate.json".format(user_id))
+        return self._put("/admin/users/{0}/deactivate.json".format(user_id))
 
     def user_all(self, user_id):
         """
