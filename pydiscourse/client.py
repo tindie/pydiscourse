@@ -890,6 +890,14 @@ class DiscourseClient(object):
         """
         return self._get('/admin/site_settings.json')
 
+    def category_latest_topics(self, name, parent=None, **kwargs):
+        """
+        Get latest topics from a category
+        """
+        if parent:
+            name = u'{0}/{1}'.format(parent, name)
+        return self._get(u'/c/{0}/l/latest.json'.format(name), **kwargs)
+
     def site_settings(self, **kwargs):
         """
         Update site settings
