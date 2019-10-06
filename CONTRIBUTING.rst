@@ -69,5 +69,8 @@ Once running you can access the Discourse install at http://localhost:4000.
 TODO
 ====
 
-Refer to, https://github.com/discourse/discourse_api/blob/master/routes.txt for
-a list of all operations available in Discourse.
+For a list of all operations:
+
+    you can just run rake routes inside of the discourse repo to get an up to date list
+
+Or check the old [`routes.txt`](https://github.com/discourse/discourse_api/blob/aa75df6cd851f0666f9e8071c4ef9dfdd39fc8f8/routes.txt) file, though this is certainly outdated.
