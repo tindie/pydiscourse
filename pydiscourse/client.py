@@ -84,6 +84,50 @@ class DiscourseClient(object):
         """
         return self._get("/admin/users/{0}.json".format(user_id))
 
+    def invite(self,email,group_names,custom_message, **kwargs):
+        """
+        Invite a user by email to join your forum
+
+        Args:
+            email: their email, will be used for activation and summary emails
+            group_names: the group names
+            custom_message: message to include
+            **kwargs: ???? what else can be sent through?
+
+        Returns:
+            ????
+
+        """
+        return self._post(
+            "/invites",
+            email=email,
+            group_names=group_names,
+            custom_message=custom_message,
+            **kwargs
+        )
+
+    def invite_link(self,email,group_names,custom_message, **kwargs):
+        """
+        Generate an invite link for a user to join your forum
+
+        Args:
+            email: their email, will be used for activation and summary emails
+            group_names: the group names
+            custom_message: message to include
+            **kwargs: ???? what else can be sent through?
+
+        Returns:
+            Invite link
+
+        """
+        return self._post(
+            "/invites/link",
+            email=email,
+            group_names=group_names,
+            custom_message=custom_message,
+            **kwargs
+        )
+
     def create_user(self, name, username, email, password, **kwargs):
         """
         Create a Discourse user
