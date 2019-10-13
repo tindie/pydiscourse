@@ -95,7 +95,7 @@ class DiscourseClient(object):
             **kwargs: ???? what else can be sent through?
 
         Returns:
-            ????
+            API response body (dict)
 
         """
         return self._post(
@@ -1347,6 +1347,7 @@ class DiscourseClient(object):
             params: dictionary of parameters to include to the API
 
         Returns:
+            dictionary of response body data or None
 
         """
         params["api_key"] = self.api_key
