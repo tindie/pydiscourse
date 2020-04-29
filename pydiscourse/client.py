@@ -1325,6 +1325,10 @@ class DiscourseClient(object):
         """
         return self._post('/admin/plugins/explorer/queries/{}/run'.format(query_id), **kwargs)
 
+    def notifications(self, category_id, **kwargs):
+        """ kwarg: (int) notification_level """
+        return self._post('/category/{}/notifications'.format(category_id), **kwargs)
+
     def _get(self, path, override_request_kwargs=None, **kwargs):
         """
 
