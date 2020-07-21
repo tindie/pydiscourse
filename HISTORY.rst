@@ -3,6 +3,16 @@
 Release history
 ===============
 
+1.1.0
+-----
+
+- Added ability to follow redirects in requests
+
+1.0.0
+-----
+
+- Authenticate with headers
+
 0.9.0
 -----
 
