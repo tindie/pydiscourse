@@ -3,6 +3,12 @@
 Release history
 ===============
 
+1.1.1
+-----
+
+- Fix for empty dictionary and 413 API response
+- Fix for getting member groups
+
 1.1.0
 -----
 
