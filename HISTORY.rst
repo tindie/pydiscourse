@@ -3,6 +3,11 @@
 Release history
 ===============
 
+1.1.2
+-----
+
+- Fix for Discourse users API change
+
 1.1.1
 -----
 
