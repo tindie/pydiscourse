@@ -892,6 +892,10 @@ class DiscourseClient(object):
         """
         return self._get("/categories.json", **kwargs)["category_list"]["categories"]
 
+    # Depecreated
+    # Returns a 302 on recent Discourse version
+    # Use category_topics instead
+    # See https://github.com/discourse/discourse_api/pull/94
     def category(self, name, parent=None, **kwargs):
         """
 
