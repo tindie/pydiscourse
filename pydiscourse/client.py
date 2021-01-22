@@ -129,13 +129,28 @@ class DiscourseClient(object):
         )
 
     def user_by_id(self, pk):
+        """
+        Get user from ID
+
+        Args:
+            pk: user id
+
+        Returns:
+            user
+        """
         return self._get('/admin/users/{0}.json'.format(pk))
 
     def user_by_email(self, email):
-        return self._get('/admin/users/list/all.json?email={0}'.format(email))
+        """
+        Get user from email
 
-    def user_emails(self, username):
-        return self._get('/u/{0}/emails.json'.format(username))
+        Args:
+            email: user email
+
+        Returns:
+            user
+        """
+        return self._get('/admin/users/list/all.json?email={0}'.format(email))
 
     def create_user(self, name, username, email, password, **kwargs):
         """
@@ -442,9 +457,6 @@ class DiscourseClient(object):
         """
         return self._delete("/admin/users/{0}.json".format(userid), **kwargs)
 
-    def delete_topic(self, topic_id, **kwargs):
-        return self._delete('/t/{0}'.format(topic_id), **kwargs)
-
     def users(self, filter=None, **kwargs):
         """
 
@@ -507,7 +519,8 @@ class DiscourseClient(object):
             **kwargs
         )
 
-    # Doesn't work on recent Discourse versions
+    # Doesn't work on recent Discourse versions (2014+)
+    # https://github.com/discourse/discourse_api/pull/204
     def hot_topics(self, **kwargs):
         """
 
@@ -520,6 +533,12 @@ class DiscourseClient(object):
         return self._get("/hot.json", **kwargs)
 
     def top_topics(self, **kwargs):
+        """
+        Get top topics
+
+        Returns:
+            List of top topics
+        """
         return self._get('/top.json', **kwargs)
 
     def latest_topics(self, **kwargs):
@@ -583,6 +602,19 @@ class DiscourseClient(object):
 
         """
         return self._get("/t/{0}/{1}.json".format(topic_id, post_id), **kwargs)
+
+
+    def post_by_id(self, post_id, **kwargs):
+        """
+        Get a post from its id
+        Args:
+            post_id: id of the post
+            **kwargs:
+
+        Returns:
+            post
+        """
+        return self._get('/posts/{0}.json'.format(post_id), **kwargs)
 
     def posts(self, topic_id, post_ids=None, **kwargs):
         """
@@ -713,6 +745,11 @@ class DiscourseClient(object):
         return self._put("/posts/{0}".format(post_id), **kwargs)
 
     def reset_bump_date(self, topic_id, **kwargs):
+        """
+        Reset bump date
+
+        See https://meta.discourse.org/t/what-is-a-bump/105562
+        """
         return self._put('/t/{0}/reset-bump-date'.format(topic_id), **kwargs)
 
     def topics_by(self, username, **kwargs):
@@ -921,6 +958,7 @@ class DiscourseClient(object):
         Args:
             site_texts:
             **kwargs:
+
         Returns:
 
         """
@@ -1326,7 +1364,15 @@ class DiscourseClient(object):
         return self._post('/admin/plugins/explorer/queries/{}/run'.format(query_id), **kwargs)
 
     def notifications(self, category_id, **kwargs):
-        """ kwarg: (int) notification_level """
+        """
+        Get notifications
+
+        Args:
+            category_id
+            **kwargs:
+                notification_level=(int)
+
+        """
         return self._post('/category/{}/notifications'.format(category_id), **kwargs)
 
     def _get(self, path, override_request_kwargs=None, **kwargs):
