@@ -128,6 +128,30 @@ class DiscourseClient(object):
             **kwargs
         )
 
+    def user_by_id(self, pk):
+        """
+        Get user from ID
+
+        Args:
+            pk: user id
+
+        Returns:
+            user
+        """
+        return self._get('/admin/users/{0}.json'.format(pk))
+
+    def user_by_email(self, email):
+        """
+        Get user from email
+
+        Args:
+            email: user email
+
+        Returns:
+            user
+        """
+        return self._get('/admin/users/list/all.json?email={0}'.format(email))
+
     def create_user(self, name, username, email, password, **kwargs):
         """
         Create a Discourse user
@@ -495,6 +519,8 @@ class DiscourseClient(object):
             **kwargs
         )
 
+    # Doesn't work on recent Discourse versions (2014+)
+    # https://github.com/discourse/discourse_api/pull/204
     def hot_topics(self, **kwargs):
         """
 
@@ -505,6 +531,15 @@ class DiscourseClient(object):
 
         """
         return self._get("/hot.json", **kwargs)
+
+    def top_topics(self, **kwargs):
+        """
+        Get top topics
+
+        Returns:
+            List of top topics
+        """
+        return self._get('/top.json', **kwargs)
 
     def latest_topics(self, **kwargs):
         """
@@ -567,6 +602,19 @@ class DiscourseClient(object):
 
         """
         return self._get("/t/{0}/{1}.json".format(topic_id, post_id), **kwargs)
+
+
+    def post_by_id(self, post_id, **kwargs):
+        """
+        Get a post from its id
+        Args:
+            post_id: id of the post
+            **kwargs:
+
+        Returns:
+            post
+        """
+        return self._get('/posts/{0}.json'.format(post_id), **kwargs)
 
     def posts(self, topic_id, post_ids=None, **kwargs):
         """
@@ -695,6 +743,14 @@ class DiscourseClient(object):
         kwargs["post[raw]"] = content
         kwargs["post[edit_reason]"] = edit_reason
         return self._put("/posts/{0}".format(post_id), **kwargs)
+
+    def reset_bump_date(self, topic_id, **kwargs):
+        """
+        Reset bump date
+
+        See https://meta.discourse.org/t/what-is-a-bump/105562
+        """
+        return self._put('/t/{0}/reset-bump-date'.format(topic_id), **kwargs)
 
     def topics_by(self, username, **kwargs):
         """
@@ -836,6 +892,10 @@ class DiscourseClient(object):
         """
         return self._get("/categories.json", **kwargs)["category_list"]["categories"]
 
+    # Depecreated
+    # Returns a 302 on recent Discourse version
+    # Use category_topics instead
+    # See https://github.com/discourse/discourse_api/pull/94
     def category(self, name, parent=None, **kwargs):
         """
 
@@ -865,12 +925,26 @@ class DiscourseClient(object):
         """
         return self._delete(u"/categories/{0}".format(category_id), **kwargs)
 
+    def get_site_settings(self):
+        """
+        Get site settings
+        """
+        return self._get('/admin/site_settings.json')
+
+    def category_latest_topics(self, name, parent=None, **kwargs):
+        """
+        Get latest topics from a category
+        """
+        if parent:
+            name = u'{0}/{1}'.format(parent, name)
+        return self._get(u'/c/{0}/l/latest.json'.format(name), **kwargs)
+
     def site_settings(self, **kwargs):
         """
+        Update site settings
 
         Args:
-            settings:
-            **kwargs:
+            **kwargs: key-value of properties to update
 
         Returns:
 
@@ -1284,6 +1358,26 @@ class DiscourseClient(object):
         kwargs["tag_names"] = tag_names
         kwargs["parent_tag_name"] = parent_tag_name
         return self._post("/tag_groups", json=True, **kwargs)["tag_group"]
+
+    def data_explorer_query(self, query_id, **kwargs):
+        """
+        Run a query with database explorer plugin.
+        Requires discourse-data-explorer installed
+        https://github.com/discourse/discourse-data-explorer
+        """
+        return self._post('/admin/plugins/explorer/queries/{}/run'.format(query_id), **kwargs)
+
+    def notifications(self, category_id, **kwargs):
+        """
+        Get notifications
+
+        Args:
+            category_id
+            **kwargs:
+                notification_level=(int)
+
+        """
+        return self._post('/category/{}/notifications'.format(category_id), **kwargs)
 
     def _get(self, path, override_request_kwargs=None, **kwargs):
         """
