@@ -26,12 +26,7 @@ from base64 import b64encode, b64decode
 import hmac
 import hashlib
 
-try:  # py3
-    from urllib.parse import unquote, urlencode, parse_qs
-except ImportError:
-    from urllib import unquote, urlencode
-    from urlparse import parse_qs
-
+from urllib.parse import unquote, urlencode, parse_qs
 
 from pydiscourse.exceptions import DiscourseError
 

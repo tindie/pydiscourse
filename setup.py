@@ -17,15 +17,12 @@ setup(
     description="A Python library for the Discourse API",
     long_description=README + '\n\n' + HISTORY,
     author="Marc Sibson and contributors",
-    author_email="ben+pydiscourse@benlopatin.com",
+    author_email="ben@benlopatin.com",
     license="BSD",
     url="https://github.com/bennylope/pydiscourse",
     packages=find_packages(exclude=["tests.*", "tests"]),
     install_requires=[
         'requests>=2.4.2',
-    ],
-    tests_require=[
-        'mock',
     ],
     test_suite='tests',
     entry_points={
