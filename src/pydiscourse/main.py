@@ -15,6 +15,7 @@ from pydiscourse.client import DiscourseClient, DiscourseError
 
 class DiscourseCmd(cmd.Cmd):
     """Handles CLI commands"""
+
     prompt = "discourse>"
     output = sys.stdout
 
