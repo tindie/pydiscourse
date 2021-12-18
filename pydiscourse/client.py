@@ -603,6 +603,23 @@ class DiscourseClient(object):
         """
         return self._get("/t/{0}/{1}.json".format(topic_id, post_id), **kwargs)
 
+    def post_action_users(self, post_id, post_action_type_id=None, **kwargs):
+        """
+
+        Args:
+            post_id: int
+            post_action_type_id: Optional[int]
+            **kwargs:
+
+        Returns:
+
+        """
+        # https://meta.discourse.org/t/getting-who-liked-a-post-from-the-api/103618
+
+        kwargs["id"] = post_id
+        if post_action_type_id is not None:
+            kwargs["post_action_type_id"] = post_action_type_id
+        return self._get("/post_action_users", **kwargs)
 
     def post_by_id(self, post_id, **kwargs):
         """
