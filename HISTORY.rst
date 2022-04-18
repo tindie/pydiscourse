@@ -3,6 +3,13 @@
 Release history
 ===============
 
+1.2.0
+-----
+
+- BREAKING? Dropped support for Python 2.7, 3.4, 3.5
+- Added numerous new endpoint queries
+- Updated category querying
+
 1.1.2
 -----
 
