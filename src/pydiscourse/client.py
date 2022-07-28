@@ -1544,10 +1544,15 @@ class DiscourseClient(object):
                 if 400 <= response.status_code < 500:
                     if 429 == response.status_code:
                         # This codepath relies on wait_seconds from Discourse v2.0.0.beta3 / v1.9.3 or higher.
-                        rj = response.json()
-                        wait_delay = (
-                            retry_backoff + rj["extras"]["wait_seconds"]
-                        )  # how long to back off for.
+                        if "application/json" in response.headers.get("Content-Type"):
+                            ret = response.json()
+                            wait_delay = (
+                                retry_backoff + ret["extras"]["wait_seconds"]
+                            )  # how long to back off for.
+                        else:
+                            # We got an early 429 error without a proper JSON body
+                            ret = response.content
+                            wait_delay = retry_backoff + 10
 
                         if retry_count > 1:
                             time.sleep(wait_delay)
@@ -1557,7 +1562,7 @@ class DiscourseClient(object):
                                 wait_delay, retry_count
                             )
                         )
-                        log.debug("API returned {0}".format(rj))
+                        log.debug("API returned {0}".format(ret))
                         continue
                     else:
                         raise DiscourseClientError(msg, response=response)
