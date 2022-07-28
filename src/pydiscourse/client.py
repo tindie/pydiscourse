@@ -1119,7 +1119,7 @@ class DiscourseClient(object):
 
         """
         return self._put(
-            "/admin/groups/{0}/owners.json".format(groupid), usernames=username
+            "/admin/groups/{0}/owners.json".format(groupid), **{"group[usernames]": username}
         )
 
     def delete_group_owner(self, groupid, userid):
