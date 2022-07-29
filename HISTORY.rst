@@ -3,6 +3,13 @@
 Release history
 ===============
 
+1.3.0
+-----
+
+- Add fix for handling global Discourse timeouts
+- Add group owners
+- Update API for add_group_owner
+
 1.2.0
 -----
 
