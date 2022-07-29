@@ -1122,6 +1122,23 @@ class DiscourseClient(object):
             "/admin/groups/{0}/owners.json".format(groupid), **{"group[usernames]": username}
         )
 
+    def add_group_owners(self, groupid, usernames):
+        """
+        Add a list of owners to a group by usernames
+
+        Args:
+            groupid: the ID of the group
+            username: the list of new owner usernames
+
+        Returns:
+            JSON API response
+
+        """
+        usernames = ",".join(usernames)
+        return self._put(
+            "/admin/groups/{0}/owners.json".format(groupid), **{"group[usernames]": usernames}
+        )
+
     def delete_group_owner(self, groupid, userid):
         """
         Deletes an owner from a group by user ID
