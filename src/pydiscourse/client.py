@@ -1572,14 +1572,17 @@ class DiscourseClient(object):
                             ret = response.content
                             wait_delay = retry_backoff + 10
 
+                        limit_name = response.headers.get(
+                                "Discourse-Rate-Limit-Error-Code", "<unknown>")
+
+                        log.info(
+                                "We have been rate limited (limit: {2}) and will wait {0} seconds ({1} retries left)".format(
+                                wait_delay, retry_count, limit_name
+                            )
+                        )
                         if retry_count > 1:
                             time.sleep(wait_delay)
                         retry_count -= 1
-                        log.info(
-                            "We have been rate limited and waited {0} seconds ({1} retries left)".format(
-                                wait_delay, retry_count
-                            )
-                        )
                         log.debug("API returned {0}".format(ret))
                         continue
                     else:
