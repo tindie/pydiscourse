@@ -1561,7 +1561,8 @@ class DiscourseClient(object):
                 if 400 <= response.status_code < 500:
                     if 429 == response.status_code:
                         # This codepath relies on wait_seconds from Discourse v2.0.0.beta3 / v1.9.3 or higher.
-                        if "application/json" in response.headers.get("Content-Type"):
+                        content_type = response.headers.get("Content-Type")
+                        if content_type is not None and "application/json" in content_type:
                             ret = response.json()
                             wait_delay = (
                                 retry_backoff + ret["extras"]["wait_seconds"]
