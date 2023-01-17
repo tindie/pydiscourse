@@ -36,3 +36,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# Pyenv
+.python-version
+
+# PyCharm
+.idea

@@ -649,6 +649,21 @@ class DiscourseClient(object):
             kwargs["post_ids[]"] = post_ids
         return self._get("/t/{0}/posts.json".format(topic_id), **kwargs)
 
+    def latest_posts(self, before=None, **kwargs):
+        """
+        List latest posts across topics
+
+        Args:
+            before: Load posts with an id lower than this value. Useful for pagination.
+            **kwargs:
+
+        Returns:
+
+        """
+        if before:
+            kwargs["before"] = before
+        return self._get("/posts.json", **kwargs)
+
     def topic_timings(self, topic_id, time, timings={}, **kwargs):
         """
         Set time spent reading a post

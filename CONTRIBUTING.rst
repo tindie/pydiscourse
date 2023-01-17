@@ -43,7 +43,7 @@ Or it's slightly faster cousin `detox
 
 Alternatively, you can run the self test with the following commands::
 
-    pip install -r requirements.dev.txt
+    pip install -r requirements.txt
     pip install -e .
     python setup.py test
 
