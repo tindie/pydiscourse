@@ -1561,7 +1561,8 @@ class DiscourseClient(object):
                 if 400 <= response.status_code < 500:
                     if 429 == response.status_code:
                         # This codepath relies on wait_seconds from Discourse v2.0.0.beta3 / v1.9.3 or higher.
-                        if "application/json" in response.headers.get("Content-Type"):
+                        content_type = response.headers.get("Content-Type")
+                        if content_type is not None and "application/json" in content_type:
                             ret = response.json()
                             wait_delay = (
                                 retry_backoff + ret["extras"]["wait_seconds"]
@@ -1571,14 +1572,17 @@ class DiscourseClient(object):
                             ret = response.content
                             wait_delay = retry_backoff + 10
 
+                        limit_name = response.headers.get(
+                                "Discourse-Rate-Limit-Error-Code", "<unknown>")
+
+                        log.info(
+                                "We have been rate limited (limit: {2}) and will wait {0} seconds ({1} retries left)".format(
+                                wait_delay, retry_count, limit_name
+                            )
+                        )
                         if retry_count > 1:
                             time.sleep(wait_delay)
                         retry_count -= 1
-                        log.info(
-                            "We have been rate limited and waited {0} seconds ({1} retries left)".format(
-                                wait_delay, retry_count
-                            )
-                        )
                         log.debug("API returned {0}".format(ret))
                         continue
                     else:
