@@ -182,6 +182,11 @@ class TestTopics(ClientBaseTestCase):
 @mock.patch("pydiscourse.client.requests.request")
 class MiscellaneousTests(ClientBaseTestCase):
 
+    def test_latest_posts(self, request):
+        prepare_response(request)
+        r = self.client.latest_posts(before=54321)
+        self.assertRequestCalled(request, "GET", "/posts.json", before=54321)
+
     def test_search(self, request):
         prepare_response(request)
         self.client.search("needle")
