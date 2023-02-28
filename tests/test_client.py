@@ -198,6 +198,11 @@ class MiscellaneousTests(ClientBaseTestCase):
         self.assertRequestCalled(request, "GET", "/categories.json")
         self.assertEqual(r, request().json()["category_list"]["categories"])
 
+    def test_update_category(self, request):
+        prepare_response(request)
+        self.client.update_category(123, a="a", b="b")
+        self.assertRequestCalled(request, "PUT", "/categories/123", a="a", b="b")
+
     def test_users(self, request):
         prepare_response(request)
         self.client.users()
