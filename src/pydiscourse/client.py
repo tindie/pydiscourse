@@ -937,6 +937,18 @@ class DiscourseClient(object):
 
         return self._get(u"/c/{0}/show.json".format(category_id), **kwargs)
 
+    def update_category(self, category_id, **kwargs):
+        """
+
+        Args:
+            category_id:
+            **kwargs:
+
+        Returns:
+
+        """
+        return self._put("/categories/{0}".format(category_id), json=True, **kwargs)
+
     def delete_category(self, category_id, **kwargs):
         """
         Remove category
