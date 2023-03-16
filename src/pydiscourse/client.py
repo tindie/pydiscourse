@@ -1145,9 +1145,7 @@ class DiscourseClient(object):
             JSON API response
 
         """
-        return self._put(
-            "/admin/groups/{0}/owners.json".format(groupid), **{"group[usernames]": username}
-        )
+        return self.add_group_owners(groupid, [username])
 
     def add_group_owners(self, groupid, usernames):
         """
@@ -1163,7 +1161,7 @@ class DiscourseClient(object):
         """
         usernames = ",".join(usernames)
         return self._put(
-            "/admin/groups/{0}/owners.json".format(groupid), **{"group[usernames]": usernames}
+            "/groups/{0}/owners.json".format(groupid), **{"usernames": usernames}
         )
 
     def delete_group_owner(self, groupid, userid):
