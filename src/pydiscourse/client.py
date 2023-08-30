@@ -1189,13 +1189,28 @@ class DiscourseClient(object):
         group = self._get("/groups/{0}/members.json".format(group_name))
         return group["owners"]
 
+    def _get_paginated_list(self, url, name, offset, **kwargs):
+        result = []
+        initial_offset = offset
+        while True:
+            kwargs["offset"] = offset
+            response = self._get(url, **kwargs)
+            nreturned = len(response[name])
+            result.extend(response[name])
+            offset += nreturned
+
+            if response["meta"]["total"] == len(result) - initial_offset:
+                return result
+            if nreturned == 0:
+                raise RuntimeError("more items expected, but none returned")
+
     def group_members(self, group_name, offset=0, **kwargs):
         """
         Get all members of a group by group name
         """
-        kwargs["offset"] = offset
-        group = self._get("/groups/{0}/members.json".format(group_name), **kwargs)
-        return group["members"]
+        return self._get_paginated_list(
+                "/groups/{0}/members.json".format(group_name),
+                "members", offset, **kwargs)
 
     def add_group_member(self, groupid, username):
         """
