@@ -126,6 +126,69 @@ class TestUserManagement:
         assert request.called_once
 
 
+class TestTopics:
+    def test_hot_topics(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/hot.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.hot_topics()
+        assert request.called_once
+
+    def test_latest_topics(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/latest.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.latest_topics()
+
+        assert request.called_once
+
+    def test_new_topics(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/new.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.new_topics()
+        assert request.called_once
+
+    def test_topic(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/t/some-test-slug/22.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.topic("some-test-slug", 22)
+        assert request.called_once
+
+    def test_topics_by(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/topics/created-by/someuser.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={"topic_list": {"topics": []}},
+        )
+        discourse_client.topics_by("someuser")
+
+        assert request.called_once
+
+    def test_invite_user_to_topic(self, discourse_client, requests_mock):
+        request = requests_mock.post(
+            f"{discourse_client.host}/t/22/invite.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.invite_user_to_topic("test@example.com", 22)
+        assert request.called_once
+
+        request_payload = urllib.parse.parse_qs(request.last_request.text)
+
+        assert request_payload["email"] == ["test@example.com"]
+        assert request_payload["topic_id"] == ["22"]
+
+
 def prepare_response(request):
     # we need to mocked response to look a little more real
     request.return_value = mock.MagicMock(
@@ -157,43 +220,6 @@ class ClientBaseTestCase(unittest.TestCase):
 
         if verb == "GET":
             self.assertEqual(kwargs["params"], params)
-
-
-@mock.patch("requests.request")
-class TestTopics(ClientBaseTestCase):
-    def test_hot_topics(self, request):
-        prepare_response(request)
-        self.client.hot_topics()
-        self.assertRequestCalled(request, "GET", "/hot.json")
-
-    def test_latest_topics(self, request):
-        prepare_response(request)
-        self.client.latest_topics()
-        self.assertRequestCalled(request, "GET", "/latest.json")
-
-    def test_new_topics(self, request):
-        prepare_response(request)
-        self.client.new_topics()
-        self.assertRequestCalled(request, "GET", "/new.json")
-
-    def test_topic(self, request):
-        prepare_response(request)
-        self.client.topic("some-test-slug", 22)
-        self.assertRequestCalled(request, "GET", "/t/some-test-slug/22.json")
-
-    def test_topics_by(self, request):
-        prepare_response(request)
-        r = self.client.topics_by("someuser")
-        self.assertRequestCalled(request, "GET", "/topics/created-by/someuser.json")
-        self.assertEqual(r, request().json()["topic_list"]["topics"])
-
-    def invite_user_to_topic(self, request):
-        prepare_response(request)
-        email = "test@example.com"
-        self.client.invite_user_to_topic(email, 22)
-        self.assertRequestCalled(
-            request, "POST", "/t/22/invite.json", email=email, topic_id=22
-        )
 
 
 @mock.patch("pydiscourse.client.requests.request")
