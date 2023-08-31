@@ -1,0 +1,49 @@
+[tool.black]
+line-length=120
+target-version = ["py311"]
+
+[tool.ruff]
+exclude = [
+    ".tox",
+    ".git",
+    "build",
+    "dist",
+    "docs",
+    ".ropeproject",
+]
+ignore = [
+    "S101",  # Assertions good, actually
+    "TRY003",  # For now not worth back tracking
+]
+line-length = 240
+select = [
+    "S",  # Security (formerly B when using Bandit directly)
+    "E",
+    "F",
+    "N",
+    "W",
+    "COM",  # commas
+    "PT",  # pytest
+    "UP",  # Upgrade Python syntax
+    "T",
+    "A",  # built-in shadowing
+    "FBT",  # Boolean traps
+    "BLE",  # Blind exceptions
+    "PIE",
+    "TRY",
+    "ERA",  # eradicate commented out code
+]
+
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = true
+parametrize-names-type = "tuple"
+parametrize-values-row-type = "tuple"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.coverage.run]
+include = ["src/pydiscourse/*"]
+
