@@ -263,19 +263,19 @@ class DiscourseClient:
         """
         return self._put(f"/admin/users/{userid}/unsuspend")
 
-    def list_users(self, type, **kwargs):
+    def list_users(self, user_type, **kwargs):
         """
 
         optional user search: filter='test@example.com' or filter='scott'
 
         Args:
-            type:
+            user_type:
             **kwargs:
 
         Returns:
 
         """
-        return self._get(f"/admin/users/list/{type}.json", **kwargs)
+        return self._get(f"/admin/users/list/{user_type}.json", **kwargs)
 
     def update_avatar_from_url(self, username, url, **kwargs):
         """
@@ -471,20 +471,20 @@ class DiscourseClient:
         """
         return self._delete(f"/admin/users/{userid}.json", **kwargs)
 
-    def users(self, filter=None, **kwargs):
+    def users(self, filter_name=None, **kwargs):
         """
 
         Args:
-            filter:
+            filter_name:
             **kwargs:
 
         Returns:
 
         """
-        if filter is None:
-            filter = "active"
+        if filter_name is None:
+            filter_name = "active"
 
-        return self._get(f"/admin/users/list/{filter}.json", **kwargs)
+        return self._get(f"/admin/users/list/{filter_name}.json", **kwargs)
 
     def private_messages(self, username=None, **kwargs):
         """
@@ -1406,21 +1406,21 @@ class DiscourseClient:
         """
         return self._put(f"/admin/users/{user_id}/block", **kwargs)
 
-    def upload_image(self, image, type, synchronous, **kwargs):
+    def upload_image(self, image, upload_type, synchronous, **kwargs):
         """
         Upload image or avatar
 
         Args:
             name:
             file:
-            type:
+            upload_type: one of "avatar" "profile_background" "card_background" "custom_emoji" "composer"
             synchronous:
             **kwargs:
 
         Returns:
 
         """
-        kwargs["type"] = type
+        kwargs["type"] = upload_type
         if bool(synchronous):
             kwargs["synchronous"] = "true"
         else:
@@ -1428,20 +1428,20 @@ class DiscourseClient:
         files = {"file": open(image, "rb")}
         return self._post("/uploads.json", files=files, **kwargs)
 
-    def user_actions(self, username, filter, offset=0, **kwargs):
+    def user_actions(self, username, actions_filter, offset=0, **kwargs):
         """
         List all possible user actions
 
         Args:
             username:
-            filter:
+            actions_filter:
             **kwargs:
 
         Returns:
 
         """
         kwargs["username"] = username
-        kwargs["filter"] = filter
+        kwargs["filter"] = actions_filter
         kwargs["offset"] = offset
         return self._get("/user_actions.json", **kwargs)["user_actions"]
 
