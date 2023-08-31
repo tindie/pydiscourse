@@ -1,8 +1,6 @@
-import unittest
-import urllib.parse
-from unittest import mock
+"""Tests for the client methods."""
 
-from pydiscourse import client
+import urllib.parse
 
 
 def test_empty_content_http_ok(discourse_host, discourse_client, requests_mock):
@@ -189,75 +187,75 @@ class TestTopics:
         assert request_payload["topic_id"] == ["22"]
 
 
-def prepare_response(request):
-    # we need to mocked response to look a little more real
-    request.return_value = mock.MagicMock(
-        headers={"content-type": "application/json; charset=utf-8"}
-    )
-
-
-class ClientBaseTestCase(unittest.TestCase):
-    """ """
-
-    def setUp(self):
-        self.host = "http://testhost"
-        self.api_username = "testuser"
-        self.api_key = "testkey"
-
-        self.client = client.DiscourseClient(self.host, self.api_username, self.api_key)
-
-    def assertRequestCalled(self, request, verb, url, **params):
-        self.assertTrue(request.called)
-
-        args, kwargs = request.call_args
-
-        self.assertEqual(args[0], verb)
-        self.assertEqual(args[1], self.host + url)
-
-        headers = kwargs["headers"]
-        self.assertEqual(headers.pop("Api-Username"), self.api_username)
-        self.assertEqual(headers.pop("Api-Key"), self.api_key)
-
-        if verb == "GET":
-            self.assertEqual(kwargs["params"], params)
-
-
-@mock.patch("pydiscourse.client.requests.request")
-class MiscellaneousTests(ClientBaseTestCase):
-    def test_latest_posts(self, request):
-        prepare_response(request)
-        r = self.client.latest_posts(before=54321)
-        self.assertRequestCalled(request, "GET", "/posts.json", before=54321)
-
-    def test_search(self, request):
-        prepare_response(request)
-        self.client.search("needle")
-        self.assertRequestCalled(request, "GET", "/search.json", term="needle")
-
-    def test_categories(self, request):
-        prepare_response(request)
-        r = self.client.categories()
-        self.assertRequestCalled(request, "GET", "/categories.json")
-        self.assertEqual(r, request().json()["category_list"]["categories"])
-
-    def test_update_category(self, request):
-        prepare_response(request)
-        self.client.update_category(123, a="a", b="b")
-        self.assertRequestCalled(request, "PUT", "/categories/123", a="a", b="b")
-
-    def test_users(self, request):
-        prepare_response(request)
-        self.client.users()
-        self.assertRequestCalled(request, "GET", "/admin/users/list/active.json")
-
-    def test_badges(self, request):
-        prepare_response(request)
-        self.client.badges()
-        self.assertRequestCalled(request, "GET", "/admin/badges.json")
-
-    def test_grant_badge_to(self, request):
-        prepare_response(request)
-        self.client.grant_badge_to("username", 1)
-        self.assertRequestCalled(
-            request, "POST", "/user_badges", username="username", badge_id=1
+class TestEverything:
+    def test_latest_posts(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/posts.json?before=54321",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
         )
+        discourse_client.latest_posts(before=54321)
+        assert request.called_once
+
+    def test_search(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/search.json?term=needle",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.search(term="needle")
+        assert request.called_once
+
+    def test_categories(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/categories.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={"category_list": {"categories": []}},
+        )
+        discourse_client.categories()
+        assert request.called_once
+
+    def test_update_category(self, discourse_client, requests_mock):
+        # self.assertRequestCalled(request, "PUT", "/categories/123", a="a", b="b")
+        request = requests_mock.put(
+            f"{discourse_client.host}/categories/123",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.update_category(123, a="a", b="b")
+
+        request_payload = request.last_request.json()
+
+        assert request_payload["a"] == "a"
+        assert request_payload["b"] == "b"
+
+    def test_users(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/admin/users/list/active.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.users()
+        assert request.called_once
+
+    def test_badges(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/admin/badges.json",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.badges()
+        assert request.called_once
+
+    def test_grant_badge_to(self, discourse_client, requests_mock):
+        request = requests_mock.post(
+            f"{discourse_client.host}/user_badges",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.grant_badge_to("username", 1)
+
+        request_payload = urllib.parse.parse_qs(request.last_request.text)
+
+        assert request_payload["username"] == ["username"]
+        assert request_payload["badge_id"] == ["1"]
