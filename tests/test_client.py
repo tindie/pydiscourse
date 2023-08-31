@@ -199,7 +199,6 @@ class TestEverything:
         assert request.called_once
 
     def test_update_category(self, discourse_client, requests_mock):
-        # self.assertRequestCalled(request, "PUT", "/categories/123", a="a", b="b")
         request = requests_mock.put(
             f"{discourse_client.host}/categories/123",
             headers={"Content-Type": "application/json; charset=utf-8"},
