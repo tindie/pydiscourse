@@ -111,7 +111,7 @@ class DiscourseClient(object):
             email=email,
             group_names=group_names,
             custom_message=custom_message,
-            **kwargs
+            **kwargs,
         )
 
     def invite_link(self, email, group_names, custom_message, **kwargs):
@@ -133,7 +133,7 @@ class DiscourseClient(object):
             email=email,
             group_names=group_names,
             custom_message=custom_message,
-            **kwargs
+            **kwargs,
         )
 
     def user_by_id(self, pk):
@@ -190,7 +190,7 @@ class DiscourseClient(object):
             password=password,
             password_confirmation=confirmations,
             challenge=challenge,
-            **kwargs
+            **kwargs,
         )
 
     def user_by_external_id(self, external_id):
@@ -289,7 +289,7 @@ class DiscourseClient(object):
 
         """
         return self._post(
-            "/users/{0}/preferences/avatar".format(username), file=url, **kwargs
+            "/users/{0}/preferences/avatar".format(username), file=url, **kwargs,
         )
 
     def update_avatar_image(self, username, img, **kwargs):
@@ -307,7 +307,7 @@ class DiscourseClient(object):
         """
         files = {"file": img}
         return self._post(
-            "/users/{0}/preferences/avatar".format(username), files=files, **kwargs
+            "/users/{0}/preferences/avatar".format(username), files=files, **kwargs,
         )
 
     def toggle_gravatar(self, username, state=True, **kwargs):
@@ -360,7 +360,7 @@ class DiscourseClient(object):
         return self._put(
             "/users/{0}/preferences/avatar/pick".format(username),
             upload_id=upload_response["id"],
-            **kwargs
+            **kwargs,
         )
 
     def update_email(self, username, email, **kwargs):
@@ -375,7 +375,7 @@ class DiscourseClient(object):
 
         """
         return self._put(
-            "/users/{0}/preferences/email".format(username), email=email, **kwargs
+            "/users/{0}/preferences/email".format(username), email=email, **kwargs,
         )
 
     def update_user(self, username, **kwargs):
@@ -404,7 +404,7 @@ class DiscourseClient(object):
         return self._put(
             "/users/{0}/preferences/username".format(username),
             new_username=new_username,
-            **kwargs
+            **kwargs,
         )
 
     def set_preference(self, username=None, **kwargs):
@@ -507,7 +507,7 @@ class DiscourseClient(object):
         if username is None:
             username = self.api_username
         return self._get(
-            "/topics/private-messages-unread/{0}.json".format(username), **kwargs
+            "/topics/private-messages-unread/{0}.json".format(username), **kwargs,
         )
 
     def category_topics(self, category_id, **kwargs):
@@ -524,7 +524,7 @@ class DiscourseClient(object):
         return self._get(
             "/c/{0}.json".format(category_id),
             override_request_kwargs={"allow_redirects": True},
-            **kwargs
+            **kwargs,
         )
 
     # Doesn't work on recent Discourse versions (2014+)
@@ -722,7 +722,7 @@ class DiscourseClient(object):
         return self._put("{}".format(topic_url), **kwargs)
 
     def create_post(
-        self, content, category_id=None, topic_id=None, title=None, tags=[], **kwargs
+        self, content, category_id=None, topic_id=None, title=None, tags=[], **kwargs,
     ):
         """
 
@@ -745,7 +745,7 @@ class DiscourseClient(object):
             title=title,
             raw=content,
             topic_id=topic_id,
-            **kwargs
+            **kwargs,
         )
 
     def update_topic_status(self, topic_id, status, enabled, **kwargs):
@@ -854,7 +854,7 @@ class DiscourseClient(object):
 
         """
         return self._post(
-            "/user_badges", username=username, badge_id=badge_id, **kwargs
+            "/user_badges", username=username, badge_id=badge_id, **kwargs,
         )
 
     def user_badges(self, username, **kwargs):
@@ -881,7 +881,7 @@ class DiscourseClient(object):
         return self._get("/u/{}/emails.json".format(username))
 
     def create_category(
-        self, name, color, text_color="FFFFFF", permissions=None, parent=None, **kwargs
+        self, name, color, text_color="FFFFFF", permissions=None, parent=None, **kwargs,
     ):
         """
 
@@ -1003,7 +1003,7 @@ class DiscourseClient(object):
         for setting, value in kwargs.items():
             setting = setting.replace(" ", "_")
             self._request(
-                PUT, "/admin/site_settings/{0}".format(setting), {setting: value}
+                PUT, "/admin/site_settings/{0}".format(setting), {setting: value},
             )
 
     def customize_site_texts(self, site_texts, **kwargs):
@@ -1020,7 +1020,7 @@ class DiscourseClient(object):
         for site_text, value in site_texts.items():
             kwargs = {"site_text": {"value": value}}
             self._put(
-                "/admin/customize/site_texts/{0}".format(site_text), json=True, **kwargs
+                "/admin/customize/site_texts/{0}".format(site_text), json=True, **kwargs,
             )
 
     def groups(self, **kwargs):
@@ -1090,7 +1090,7 @@ class DiscourseClient(object):
         flair_url=None,
         flair_bg_color=None,
         flair_color=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Args:
@@ -1169,7 +1169,7 @@ class DiscourseClient(object):
         """
         usernames = ",".join(usernames)
         return self._put(
-            "/groups/{0}/owners.json".format(groupid), **{"usernames": usernames}
+            "/groups/{0}/owners.json".format(groupid), **{"usernames": usernames},
         )
 
     def delete_group_owner(self, groupid, userid):
@@ -1187,7 +1187,7 @@ class DiscourseClient(object):
 
         """
         return self._delete(
-            "/admin/groups/{0}/owners.json".format(groupid), user_id=userid
+            "/admin/groups/{0}/owners.json".format(groupid), user_id=userid,
         )
 
     def group_owners(self, group_name):
@@ -1236,7 +1236,7 @@ class DiscourseClient(object):
 
         """
         return self._put(
-            "/groups/{0}/members.json".format(groupid), usernames=username
+            "/groups/{0}/members.json".format(groupid), usernames=username,
         )
 
     def add_group_members(self, groupid, usernames):
@@ -1449,7 +1449,7 @@ class DiscourseClient(object):
         https://github.com/discourse/discourse-data-explorer
         """
         return self._post(
-            "/admin/plugins/explorer/queries/{}/run".format(query_id), **kwargs
+            "/admin/plugins/explorer/queries/{}/run".format(query_id), **kwargs,
         )
 
     def notifications(self, category_id, **kwargs):
@@ -1475,7 +1475,7 @@ class DiscourseClient(object):
 
         """
         return self._request(
-            GET, path, params=kwargs, override_request_kwargs=override_request_kwargs
+            GET, path, params=kwargs, override_request_kwargs=override_request_kwargs,
         )
 
     def _put(self, path, json=False, override_request_kwargs=None, **kwargs):
@@ -1490,16 +1490,16 @@ class DiscourseClient(object):
         """
         if not json:
             return self._request(
-                PUT, path, data=kwargs, override_request_kwargs=override_request_kwargs
+                PUT, path, data=kwargs, override_request_kwargs=override_request_kwargs,
             )
 
         else:
             return self._request(
-                PUT, path, json=kwargs, override_request_kwargs=override_request_kwargs
+                PUT, path, json=kwargs, override_request_kwargs=override_request_kwargs,
             )
 
     def _post(
-        self, path, files=None, json=False, override_request_kwargs=None, **kwargs
+        self, path, files=None, json=False, override_request_kwargs=None, **kwargs,
     ):
         """
 
@@ -1539,7 +1539,7 @@ class DiscourseClient(object):
 
         """
         return self._request(
-            DELETE, path, params=kwargs, override_request_kwargs=override_request_kwargs
+            DELETE, path, params=kwargs, override_request_kwargs=override_request_kwargs,
         )
 
     def _request(
@@ -1627,8 +1627,8 @@ class DiscourseClient(object):
 
                         log.info(
                                 "We have been rate limited (limit: {2}) and will wait {0} seconds ({1} retries left)".format(
-                                wait_delay, retry_count, limit_name
-                            )
+                                wait_delay, retry_count, limit_name,
+                            ),
                         )
                         if retry_count > 1:
                             time.sleep(wait_delay)
@@ -1649,7 +1649,7 @@ class DiscourseClient(object):
 
         if response.status_code == 302:
             raise DiscourseError(
-                "Unexpected Redirect, invalid api key or host?", response=response
+                "Unexpected Redirect, invalid api key or host?", response=response,
             )
 
         json_content = "application/json; charset=utf-8"
@@ -1661,7 +1661,7 @@ class DiscourseClient(object):
 
             raise DiscourseError(
                 'Invalid Response, expecting "{0}" got "{1}"'.format(
-                    json_content, content_type
+                    json_content, content_type,
                 ),
                 response=response,
             )

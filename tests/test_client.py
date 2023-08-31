@@ -22,7 +22,7 @@ def test_empty_content_http_ok(discourse_host, discourse_client, requests_mock):
 class TestUserManagement:
     def test_get_user(self, discourse_host, discourse_client, discourse_request):
         request = discourse_request(
-            "get", "/users/someuser.json", json={"user": "someuser"}
+            "get", "/users/someuser.json", json={"user": "someuser"},
         )
         discourse_client.user("someuser")
 
@@ -40,7 +40,7 @@ class TestUserManagement:
             json={},
         )
         discourse_client.create_user(
-            "Test User", "testuser", "test@example.com", "notapassword"
+            "Test User", "testuser", "test@example.com", "notapassword",
         )
 
         assert session_request.called_once
@@ -66,7 +66,7 @@ class TestUserManagement:
 
     def test_by_external_id(self, discourse_client, discourse_request):
         request = discourse_request(
-            "get", "/users/by-external/123", json={"user": "123"}
+            "get", "/users/by-external/123", json={"user": "123"},
         )
         discourse_client.by_external_id(123)
 

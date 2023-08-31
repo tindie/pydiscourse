@@ -69,7 +69,7 @@ def discourse_api_key():
 @pytest.fixture(scope="session")
 def discourse_client(discourse_host, discourse_api_username, discourse_api_key):
     return client.DiscourseClient(
-        discourse_host, discourse_api_username, discourse_api_key
+        discourse_host, discourse_api_username, discourse_api_key,
     )
 
 
@@ -77,7 +77,7 @@ def discourse_client(discourse_host, discourse_api_username, discourse_api_key):
 def frozen_time(mocker):
     now = mocker.patch("pydiscourse.client.now")
     now.return_value = datetime.datetime(
-        2023, 8, 13, 12, 30, 15, tzinfo=datetime.timezone.utc
+        2023, 8, 13, 12, 30, 15, tzinfo=datetime.timezone.utc,
     )
 
 

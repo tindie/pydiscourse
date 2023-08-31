@@ -57,7 +57,7 @@ class DiscourseCmd(cmd.Cmd):
         """Writes output of the command to console"""
         try:
             json.dump(
-                result, self.output, sort_keys=True, indent=4, separators=(",", ": ")
+                result, self.output, sort_keys=True, indent=4, separators=(",", ": "),
             )
         except TypeError:
             self.output.write(result.text)
