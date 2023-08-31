@@ -1195,7 +1195,7 @@ class DiscourseClient:
         usernames = ",".join(usernames)
         return self._put(
             f"/groups/{groupid}/owners.json",
-            **{"usernames": usernames},
+            usernames=usernames,
         )
 
     def delete_group_owner(self, groupid, userid):
