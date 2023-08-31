@@ -314,7 +314,7 @@ class DiscourseClient:
             **kwargs,
         )
 
-    def toggle_gravatar(self, username, state=True, **kwargs):
+    def toggle_gravatar(self, username, *, state=True, **kwargs):
         """
 
         Args:
@@ -332,7 +332,7 @@ class DiscourseClient:
             kwargs["use_uploaded_avatar"] = "false"
         return self._put(url, **kwargs)
 
-    def pick_avatar(self, username, gravatar=True, generated=False, **kwargs):
+    def pick_avatar(self, username, *, gravatar=True, generated=False, **kwargs):
         """
 
         Args:
@@ -1105,6 +1105,7 @@ class DiscourseClient:
     def create_group(
         self,
         name,
+        *,
         title="",
         visible=True,
         alias_level=0,
@@ -1503,7 +1504,7 @@ class DiscourseClient:
             override_request_kwargs=override_request_kwargs,
         )
 
-    def _put(self, path, json=False, override_request_kwargs=None, **kwargs):
+    def _put(self, path, *, json=False, override_request_kwargs=None, **kwargs):
         """
 
         Args:
@@ -1532,6 +1533,7 @@ class DiscourseClient:
     def _post(
         self,
         path,
+        *,
         files=None,
         json=False,
         override_request_kwargs=None,
