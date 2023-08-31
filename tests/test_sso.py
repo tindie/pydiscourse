@@ -1,76 +1,89 @@
 from base64 import b64decode
-
-import unittest
-
 from urllib.parse import unquote
 from urllib.parse import urlparse, parse_qs
+
+import pytest
 
 from pydiscourse import sso
 from pydiscourse.exceptions import DiscourseError
 
 
-class SSOTestCase(unittest.TestCase):
+def test_sso_validate_missing_payload():
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate(None, "abc", "123")
 
-    def setUp(self):
-        # values from https://meta.discourse.org/t/official-single-sign-on-for-discourse/13045
-        self.secret = "d836444a9e4084d5b224a60c208dce14"
-        self.nonce = "cb68251eefb5211e58c00ff1395f0c0b"
-        self.payload = "bm9uY2U9Y2I2ODI1MWVlZmI1MjExZTU4YzAwZmYxMzk1ZjBjMGI%3D%0A"
-        self.signature = "2828aa29899722b35a2f191d34ef9b3ce695e0e6eeec47deb46d588d70c7cb56"
+    assert excinfo.value.args[0] == "No SSO payload or signature."
 
-        self.name = u"sam"
-        self.username = u"samsam"
-        self.external_id = u"hello123"
-        self.email = u"test@test.com"
-        self.redirect_url = u"/session/sso_login?sso=bm9uY2U9Y2I2ODI1MWVlZmI1MjExZTU4YzAwZmYxMzk1ZjBjMGImbmFtZT1z%0AYW0mdXNlcm5hbWU9c2Ftc2FtJmVtYWlsPXRlc3QlNDB0ZXN0LmNvbSZleHRl%0Acm5hbF9pZD1oZWxsbzEyMw%3D%3D%0A&sig=1c884222282f3feacd76802a9dd94e8bc8deba5d619b292bed75d63eb3152c0b"
 
-    def test_missing_args(self):
-        with self.assertRaises(DiscourseError):
-            sso.sso_validate(None, self.signature, self.secret)
+def test_sso_validate_empty_payload():
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate("", "abc", "123")
 
-        with self.assertRaises(DiscourseError):
-            sso.sso_validate("", self.signature, self.secret)
+    assert excinfo.value.args[0] == "Invalid payload."
 
-        with self.assertRaises(DiscourseError):
-            sso.sso_validate(self.payload, None, self.secret)
 
-    def test_invalid_signature(self):
-        with self.assertRaises(DiscourseError):
-            sso.sso_validate(self.payload, "notavalidsignature", self.secret)
+def test_sso_validate_missing_signature():
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate("sig", None, "123")
 
-    def test_valid_nonce(self):
-        nonce = sso.sso_validate(self.payload, self.signature, self.secret)
-        self.assertEqual(nonce, self.nonce)
+    assert excinfo.value.args[0] == "No SSO payload or signature."
 
-    def test_valid_redirect_url(self):
-        url = sso.sso_redirect_url(
-            self.nonce,
-            self.secret,
-            self.email,
-            self.external_id,
-            self.username,
-            name="sam",
-        )
 
-        self.assertIn("/session/sso_login", url[:20])
+@pytest.mark.parametrize("bad_secret", [None, ""])
+def test_sso_validate_missing_secret(bad_secret):
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate("payload", "signature", bad_secret)
 
-        # check its valid, using our own handy validator
-        params = parse_qs(urlparse(url).query)
-        payload = params["sso"][0]
-        sso.sso_validate(payload, params["sig"][0], self.secret)
+    assert excinfo.value.args[0] == "Invalid secret."
 
-        # check the params have all the data we expect
-        payload = b64decode(payload.encode("utf-8")).decode("utf-8")
-        payload = unquote(payload)
-        payload = dict((p.split("=") for p in payload.split("&")))
 
-        self.assertEqual(
-            payload,
-            {
-                "username": self.username,
-                "nonce": self.nonce,
-                "external_id": self.external_id,
-                "name": self.name,
-                "email": self.email,
-            },
-        )
+def test_sso_validate_invalid_signature(payload, signature, secret):
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate("Ym9i", signature, secret)
+
+    assert excinfo.value.args[0] == "Invalid payload."
+
+
+def test_sso_validate_invalid_payload_nonce(payload, secret):
+    with pytest.raises(DiscourseError) as excinfo:
+        sso.sso_validate(payload, "notavalidsignature", secret)
+
+    assert excinfo.value.args[0] == "Payload does not match signature."
+
+
+def test_valid_nonce(payload, signature, secret, nonce):
+    generated_nonce = sso.sso_validate(payload, signature, secret)
+    assert generated_nonce == nonce
+
+
+def test_valid_redirect_url(
+    payload, signature, secret, nonce, name, email, username, external_id, redirect_url
+):
+    url = sso.sso_redirect_url(
+        nonce,
+        secret,
+        email,
+        external_id,
+        username,
+        name="sam",
+    )
+
+    assert "/session/sso_login" in url[:20]
+
+    # check its valid, using our own handy validator
+    params = parse_qs(urlparse(url).query)
+    payload = params["sso"][0]
+    sso.sso_validate(payload, params["sig"][0], secret)
+
+    # check the params have all the data we expect
+    payload = b64decode(payload.encode("utf-8")).decode("utf-8")
+    payload = unquote(payload)
+    payload = dict((p.split("=") for p in payload.split("&")))
+
+    assert payload == {
+        "username": username,
+        "nonce": nonce,
+        "external_id": external_id,
+        "name": name,
+        "email": email,
+    }
