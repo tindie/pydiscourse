@@ -76,7 +76,7 @@ def discourse_client(discourse_host, discourse_api_username, discourse_api_key):
 
 
 @pytest.fixture
-def frozen_time(mocker):
+def _frozen_time(mocker):
     now = mocker.patch("pydiscourse.client.now")
     now.return_value = datetime.datetime(
         2023,

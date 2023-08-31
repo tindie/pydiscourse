@@ -2,6 +2,8 @@
 
 import urllib.parse
 
+import pytest
+
 
 def test_empty_content_http_ok(discourse_host, discourse_client, requests_mock):
     """Empty content should not raise error
@@ -79,7 +81,8 @@ class TestUserManagement:
 
         assert request.called_once
 
-    def test_suspend_user(self, discourse_client, discourse_request, frozen_time):
+    @pytest.mark.usefixtures("_frozen_time")
+    def test_suspend_user(self, discourse_client, discourse_request):
         request = discourse_request("put", "/admin/users/123/suspend")
         discourse_client.suspend(123, 1, "Testing")
 
