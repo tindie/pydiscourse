@@ -78,7 +78,7 @@ def test_valid_redirect_url(
     # check the params have all the data we expect
     payload = b64decode(payload.encode("utf-8")).decode("utf-8")
     payload = unquote(payload)
-    payload = dict((p.split("=") for p in payload.split("&")))
+    payload = dict(p.split("=") for p in payload.split("&"))
 
     assert payload == {
         "username": username,
