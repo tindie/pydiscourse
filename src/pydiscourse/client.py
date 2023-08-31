@@ -27,6 +27,14 @@ POST = "POST"
 PUT = "PUT"
 
 
+def now() -> datetime:
+    """Returns the current UTC time.
+
+    This function enables simple mocking for freezing time.
+    """
+    return datetime.utcnow()
+
+
 class DiscourseClient(object):
     """Discourse API client"""
 
@@ -236,7 +244,7 @@ class DiscourseClient(object):
             ????
 
         """
-        suspend_until = (datetime.now() + timedelta(days=duration)).isoformat()
+        suspend_until = (now() + timedelta(days=duration)).isoformat()
         return self._put(
             "/admin/users/{0}/suspend".format(userid),
             suspend_until=suspend_until,

@@ -43,15 +43,15 @@ def sso_validate(payload, signature, secret):
         raise DiscourseError("No SSO payload or signature.")
 
     if not secret:
-        raise DiscourseError("Invalid secret..")
+        raise DiscourseError("Invalid secret.")
 
     payload = unquote(payload)
     if not payload:
-        raise DiscourseError("Invalid payload..")
+        raise DiscourseError("Invalid payload.")
 
     decoded = b64decode(payload.encode("utf-8")).decode("utf-8")
     if "nonce" not in decoded:
-        raise DiscourseError("Invalid payload..")
+        raise DiscourseError("Invalid payload.")
 
     h = hmac.new(
         secret.encode("utf-8"), payload.encode("utf-8"), digestmod=hashlib.sha256

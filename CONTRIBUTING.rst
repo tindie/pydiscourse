@@ -19,9 +19,9 @@ Reviewing and merging pull requests is work, so whatever you can do to make this
 easier for the package maintainer not only speed up the process of getting your
 changes merged but also ensure they are. These few guidelines help significantly.
 If they are confusing or you need help understanding how to accomplish them,
-please ask for help in an issue. 
+please ask for help in an issue.
 
-- Please do make sure your chnageset represents a *discrete update*. If you would like to fix formatting, by all means, but don't mix that up with a bug fix. Those are separate PRs.
+- Please do make sure your changeset represents a *discrete update*. If you would like to fix formatting, by all means, but don't mix that up with a bug fix. Those are separate PRs.
 - Please do make sure that both your pull request description and your commits are meaningful and descriptive. Rebase first, if need be.
 - Please do make sure your changeset does not include more commits than necessary. Rebase first, if need be.
 - Please do make sure the changeset is not very big. If you have a large change propose it in an issue first.
@@ -30,10 +30,27 @@ please ask for help in an issue.
 Testing
 =======
 
-The best way to run the tests is with `tox <http://tox.readthedocs.org/en/latest/>`_::
+Running tests
+-------------
+
+The simplest way to quickly and repeatedly run tests while developing a feature or fix
+is to use `pytest` in your current Python environment.
+
+After installing the test dependencies::
+
+    pip install -r requirements.txt
+    pip install -e .
+
+Your can run the tests with `pytest`::
+
+    pytest --cov=src/pydiscourse
+
+This will ensure you get coverage reporting.
+
+The most comprehensive way to run the tests is with `tox <http://tox.readthedocs.org/en/latest/>`_::
 
     pip install tox
-    detox
+    tox
 
 Or it's slightly faster cousin `detox
 <https://pypi.python.org/pypi/detox>`_ which will parallelize test runs::
@@ -41,16 +58,29 @@ Or it's slightly faster cousin `detox
     pip install detox
     detox
 
-Alternatively, you can run the self test with the following commands::
+Writing tests
+-------------
 
-    pip install -r requirements.txt
-    pip install -e .
-    python setup.py test
+The primary modules of the library have coverage requirements, so you should
+write a test or tests when you add a new feature.
+
+**At a bare minimum a test should show which Discourse API endpoint is called,
+using which HTTP method, and returning any necessary data for the new function/method.**
+
+In most cases this can be accomplished quite simply by using the `discourse_request`
+fixture, which allows for mocking the HTTP request in the `requests` library. In some cases
+this may be insufficient, and you may want to directly use the `requests_mock` mocking
+fixture.
+
+If in the course of writing your test you see a `requests_mock.NoMockAddress` exception
+raised then either the *method* or the *path* (including querystring) - or both! - in
+either your mock OR your new API client method is incorrect.
 
 Live Testing
 ============
 
 You can test against a Discourse instance by following the [Official Discourse developement instructions][discoursedev].
+
 For the impatient here is the quick and dirty version::
 
     git clone git@github.com:discourse/discourse.git
