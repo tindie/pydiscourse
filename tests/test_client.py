@@ -1,22 +1,8 @@
-import sys
 import unittest
 
 from unittest import mock
 
 from pydiscourse import client
-
-
-if sys.version_info < (3,):
-
-    def b(x):
-        return x
-
-
-else:
-    import codecs
-
-    def b(x):
-        return codecs.latin_1_encode(x)[0]
 
 
 def prepare_response(request):
@@ -66,7 +52,7 @@ class TestClientRequests(ClientBaseTestCase):
         Critical to test against *bytestrings* rather than unicode
         """
         mocked_response = mock.MagicMock()
-        mocked_response.content = b(" ")
+        mocked_response.content = b" "
         mocked_response.status_code = 200
         mocked_response.headers = {"content-type": "text/plain; charset=utf-8"}
 
