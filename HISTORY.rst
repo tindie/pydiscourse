@@ -3,6 +3,21 @@
 Release history
 ===============
 
+1.5.0
+-----
+
+- Owner creation endpoint update from @akhmerov
+- Python 3.11 support from @Dettorer
+- Group membership fixes from @inducer
+- Rate limiting fixes from @inducer
+- Latest posts endpoint from @max-lancaster
+
+
+1.4.0
+-----
+
+- Documented here as skipped release
+
 1.3.0
 -----
 
