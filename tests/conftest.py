@@ -4,22 +4,22 @@ import pytest
 
 
 @pytest.fixture
-def secret():
+def sso_secret():
     return "d836444a9e4084d5b224a60c208dce14"
 
 
 @pytest.fixture
-def nonce():
+def sso_nonce():
     return "cb68251eefb5211e58c00ff1395f0c0b"
 
 
 @pytest.fixture
-def payload():
+def sso_payload():
     return "bm9uY2U9Y2I2ODI1MWVlZmI1MjExZTU4YzAwZmYxMzk1ZjBjMGI%3D%0A"
 
 
 @pytest.fixture
-def signature():
+def sso_signature():
     return "2828aa29899722b35a2f191d34ef9b3ce695e0e6eeec47deb46d588d70c7cb56"
 
 

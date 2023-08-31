@@ -37,31 +37,31 @@ def test_sso_validate_missing_secret(bad_secret):
     assert excinfo.value.args[0] == "Invalid secret."
 
 
-def test_sso_validate_invalid_signature(payload, signature, secret):
+def test_sso_validate_invalid_signature(sso_payload, sso_signature, sso_secret):
     with pytest.raises(DiscourseError) as excinfo:
-        sso.sso_validate("Ym9i", signature, secret)
+        sso.sso_validate("Ym9i", sso_signature, sso_secret)
 
     assert excinfo.value.args[0] == "Invalid payload."
 
 
-def test_sso_validate_invalid_payload_nonce(payload, secret):
+def test_sso_validate_invalid_payload_nonce(sso_payload, sso_secret):
     with pytest.raises(DiscourseError) as excinfo:
-        sso.sso_validate(payload, "notavalidsignature", secret)
+        sso.sso_validate(sso_payload, "notavalidsignature", sso_secret)
 
     assert excinfo.value.args[0] == "Payload does not match signature."
 
 
-def test_valid_nonce(payload, signature, secret, nonce):
-    generated_nonce = sso.sso_validate(payload, signature, secret)
-    assert generated_nonce == nonce
+def test_valid_nonce(sso_payload, sso_signature, sso_secret, sso_nonce):
+    generated_nonce = sso.sso_validate(sso_payload, sso_signature, sso_secret)
+    assert generated_nonce == sso_nonce
 
 
 def test_valid_redirect_url(
-    secret, nonce, name, email, username, external_id, redirect_url
+    sso_secret, sso_nonce, name, email, username, external_id, redirect_url
 ):
     url = sso.sso_redirect_url(
-        nonce,
-        secret,
+        sso_nonce,
+        sso_secret,
         email,
         external_id,
         username,
@@ -73,7 +73,7 @@ def test_valid_redirect_url(
     # check its valid, using our own handy validator
     params = parse_qs(urlparse(url).query)
     payload = params["sso"][0]
-    sso.sso_validate(payload, params["sig"][0], secret)
+    sso.sso_validate(payload, params["sig"][0], sso_secret)
 
     # check the params have all the data we expect
     payload = b64decode(payload.encode("utf-8")).decode("utf-8")
@@ -82,7 +82,7 @@ def test_valid_redirect_url(
 
     assert payload == {
         "username": username,
-        "nonce": nonce,
+        "nonce": sso_nonce,
         "external_id": external_id,
         "name": name,
         "email": email,
