@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 import datetime
 
 import pytest
@@ -78,3 +79,50 @@ def frozen_time(mocker):
     now.return_value = datetime.datetime(
         2023, 8, 13, 12, 30, 15, tzinfo=datetime.timezone.utc
     )
+
+
+@pytest.fixture
+def discourse_request(discourse_host, discourse_client, requests_mock):
+    """Fixture for mocking Discourse API requests.
+
+    The only request arguments are the method and the path.
+
+    Example:
+
+    >>> def test_something(discourse_request):
+    >>>     request = discourse_request(
+    >>>         "put",  # the method, case-insensitive
+    >>>         "/the-path.json?q=4",  # the absolute path with query, NO host
+    >>>         headers={'content-type': 'text/plain'},  # override default headers
+    >>>         content=b"ERROR",  # override bytestring response
+    >>>     )
+
+    If `content` is provided, that will be used as the response body.
+    If `json` is provided, then the body will return the given JSON-
+        compatable Python structure (e.g. dictionary).
+    If neither is given then the return `json` will be an empty
+        dictionary (`{}`).
+
+    Returns a function for inserting sensible default values.
+    """
+
+    def inner(method, path, headers=None, json=None, content=None):
+        full_path = f"{discourse_host}{path}"
+        if not headers:
+            headers = {
+                "Content-Type": "application/json; charset=utf-8",
+                "Api-Key": discourse_client.api_key,
+                "Api-Username": discourse_client.api_username,
+            }
+
+        kwargs = {}
+        if content:
+            kwargs["content"] = content
+        elif json:
+            kwargs["json"] = json
+        else:
+            kwargs["json"] = {}
+
+        return requests_mock.request(method, full_path, headers=headers, **kwargs)
+
+    return inner

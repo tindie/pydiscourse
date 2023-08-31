@@ -20,13 +20,12 @@ def test_empty_content_http_ok(discourse_host, discourse_client, requests_mock):
 
 
 class TestUserManagement:
-    def test_get_user(self, discourse_host, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_host}/users/someuser.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={"user": "someuser"},
+    def test_get_user(self, discourse_host, discourse_client, discourse_request):
+        request = discourse_request(
+            "get", "/users/someuser.json", json={"user": "someuser"}
         )
         discourse_client.user("someuser")
+
         assert request.called_once
 
     def test_create_user(self, discourse_host, discourse_client, requests_mock):
@@ -47,52 +46,34 @@ class TestUserManagement:
         assert session_request.called_once
         assert user_request.called_once
 
-    def test_update_email(self, discourse_host, discourse_client, requests_mock):
-        request = requests_mock.put(
-            f"{discourse_host}/users/someuser/preferences/email",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_update_email(self, discourse_host, discourse_client, discourse_request):
+        request = discourse_request("put", "/users/someuser/preferences/email")
         discourse_client.update_email("someuser", "newmeail@example.com")
 
         assert request.called_once
 
-    def test_update_user(self, discourse_client, requests_mock):
-        request = requests_mock.put(
-            f"{discourse_client.host}/users/someuser",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_update_user(self, discourse_client, discourse_request):
+        request = discourse_request("put", "/users/someuser")
         discourse_client.update_user("someuser", a="a", b="b")
 
         assert request.called_once
 
-    def test_update_username(self, discourse_client, requests_mock):
-        request = requests_mock.put(
-            f"{discourse_client.host}/users/someuser/preferences/username",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_update_username(self, discourse_client, discourse_request):
+        request = discourse_request("put", "/users/someuser/preferences/username")
         discourse_client.update_username("someuser", "newname")
 
         assert request.called_once
 
-    def test_by_external_id(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/users/by-external/123",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={"user": "123"},
+    def test_by_external_id(self, discourse_client, discourse_request):
+        request = discourse_request(
+            "get", "/users/by-external/123", json={"user": "123"}
         )
         discourse_client.by_external_id(123)
 
         assert request.called_once
 
-    def test_suspend_user(self, discourse_client, requests_mock, frozen_time):
-        request = requests_mock.put(
-            f"{discourse_client.host}/admin/users/123/suspend",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_suspend_user(self, discourse_client, discourse_request, frozen_time):
+        request = discourse_request("put", "/admin/users/123/suspend")
         discourse_client.suspend(123, 1, "Testing")
 
         assert request.called_once
@@ -103,22 +84,14 @@ class TestUserManagement:
         assert request_payload["reason"] == ["Testing"]
         assert request_payload["suspend_until"] == ["2023-08-14T12:30:15+00:00"]
 
-    def test_unsuspend_user(self, discourse_client, requests_mock):
-        request = requests_mock.put(
-            f"{discourse_client.host}/admin/users/123/unsuspend",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_unsuspend_user(self, discourse_client, discourse_request):
+        request = discourse_request("put", "/admin/users/123/unsuspend")
         discourse_client.unsuspend(123)
 
         assert request.called_once
 
-    def test_user_bagdes(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/user-badges/myusername.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_user_bagdes(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/user-badges/myusername.json")
         discourse_client.user_badges("myusername")
 
         assert request.called_once
