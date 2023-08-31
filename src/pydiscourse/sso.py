@@ -54,7 +54,9 @@ def sso_validate(payload, signature, secret):
         raise DiscourseError("Invalid payload.")
 
     h = hmac.new(
-        secret.encode("utf-8"), payload.encode("utf-8"), digestmod=hashlib.sha256
+        secret.encode("utf-8"),
+        payload.encode("utf-8"),
+        digestmod=hashlib.sha256,
     )
     this_signature = h.hexdigest()
 
@@ -92,7 +94,7 @@ def sso_redirect_url(nonce, secret, email, external_id, username, **kwargs):
             "email": email,
             "external_id": external_id,
             "username": username,
-        }
+        },
     )
 
     return "/session/sso_login?%s" % sso_payload(secret, **kwargs)

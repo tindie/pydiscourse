@@ -3,6 +3,17 @@
 Release history
 ===============
 
+1.6.0
+-----
+
+- Breaking: `toggle_gravatar`, `pick_avatar`, `create_group` now *require*
+  keyword arguments where keyword arguments were used. This *may* break existing
+  code if you have not referenced these by keyword!
+- Introduced `ruff` and `black` into pre-commit hook
+- Added `lint` job to GitHub Actions, tests will run if and only if lint job
+  passes.
+- Sundry code cleanup
+
 1.5.0
 -----
 

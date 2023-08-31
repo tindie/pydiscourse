@@ -47,8 +47,8 @@ def email():
 
 
 @pytest.fixture(scope="session")
-def redirect_url():
-    return "/session/sso_login?sso=bm9uY2U9Y2I2ODI1MWVlZmI1MjExZTU4YzAwZmYxMzk1ZjBjMGImbmFtZT1z%0AYW0mdXNlcm5hbWU9c2Ftc2FtJmVtYWlsPXRlc3QlNDB0ZXN0LmNvbSZleHRl%0Acm5hbF9pZD1oZWxsbzEyMw%3D%3D%0A&sig=1c884222282f3feacd76802a9dd94e8bc8deba5d619b292bed75d63eb3152c0b"
+def redirect_url(sso_payload):
+    return f"/session/sso_login?sso={sso_payload}YW0mdXNlcm5hbWU9c2Ftc2FtJmVtYWlsPXRlc3QlNDB0ZXN0LmNvbSZleHRl%0Acm5hbF9pZD1oZWxsbzEyMw%3D%3D%0A&sig=1c884222282f3feacd76802a9dd94e8bc8deba5d619b292bed75d63eb3152c0b"
 
 
 @pytest.fixture(scope="session")
@@ -69,15 +69,23 @@ def discourse_api_key():
 @pytest.fixture(scope="session")
 def discourse_client(discourse_host, discourse_api_username, discourse_api_key):
     return client.DiscourseClient(
-        discourse_host, discourse_api_username, discourse_api_key
+        discourse_host,
+        discourse_api_username,
+        discourse_api_key,
     )
 
 
 @pytest.fixture
-def frozen_time(mocker):
+def _frozen_time(mocker):
     now = mocker.patch("pydiscourse.client.now")
     now.return_value = datetime.datetime(
-        2023, 8, 13, 12, 30, 15, tzinfo=datetime.timezone.utc
+        2023,
+        8,
+        13,
+        12,
+        30,
+        15,
+        tzinfo=datetime.timezone.utc,
     )
 
 

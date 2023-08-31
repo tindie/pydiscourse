@@ -38,7 +38,7 @@ class DiscourseCmd(cmd.Cmd):
                     return method(*args, **kwargs)
 
                 except DiscourseError as e:
-                    print(e, e.response.text)
+                    sys.stderr.write(f"{e}, {e.response.text}\n")
                     return e.response
 
             return wrapper
@@ -57,7 +57,11 @@ class DiscourseCmd(cmd.Cmd):
         """Writes output of the command to console"""
         try:
             json.dump(
-                result, self.output, sort_keys=True, indent=4, separators=(",", ": ")
+                result,
+                self.output,
+                sort_keys=True,
+                indent=4,
+                separators=(",", ": "),
             )
         except TypeError:
             self.output.write(result.text)
