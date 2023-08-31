@@ -1703,8 +1703,8 @@ class DiscourseClient:
 
         try:
             decoded = response.json()
-        except ValueError:
-            raise DiscourseError("failed to decode response", response=response)
+        except ValueError as err:
+            raise DiscourseError("failed to decode response", response=response) from err
 
         # Checking "errors" length because
         # data-explorer (e.g. POST /admin/plugins/explorer/queries/{}/run)
