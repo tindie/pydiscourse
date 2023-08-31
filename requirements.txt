@@ -1,2 +1,7 @@
 pytest==7.4.0
 pytest-cov==4.1.0
+pytest-mock==3.11.1  # https://github.com/pytest-dev/pytest-mock/
+pytest-socket==0.6.0  # https://github.com/miketheman/pytest-socket
+requests-mock==1.11.0  # https://github.com/jamielennox/requests-mock
+pytest-subtests==0.11.0  # https://github.com/pytest-dev/pytest-subtests
+pytest-icdiff==0.6  # https://pypi.org/project/pytest-icdiff/
