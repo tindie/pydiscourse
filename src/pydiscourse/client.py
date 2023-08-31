@@ -419,7 +419,7 @@ class DiscourseClient(object):
         """
         if username is None:
             username = self.api_username
-        return self._put(u"/users/{0}".format(username), **kwargs)
+        return self._put("/users/{0}".format(username), **kwargs)
 
     def sync_sso(self, **kwargs):
         """
@@ -596,7 +596,7 @@ class DiscourseClient(object):
             JSON API response
 
         """
-        return self._delete(u"/t/{0}".format(topic_id), **kwargs)
+        return self._delete("/t/{0}".format(topic_id), **kwargs)
 
     def post(self, topic_id, post_id, **kwargs):
         """
@@ -915,7 +915,7 @@ class DiscourseClient(object):
                     continue
 
             if not parent_id:
-                raise DiscourseClientError(u"{0} not found".format(parent))
+                raise DiscourseClientError("{0} not found".format(parent))
 
             kwargs["parent_category_id"] = parent_id
 
@@ -943,7 +943,7 @@ class DiscourseClient(object):
 
         """
 
-        return self._get(u"/c/{0}/show.json".format(category_id), **kwargs)
+        return self._get("/c/{0}/show.json".format(category_id), **kwargs)
 
     def update_category(self, category_id, **kwargs):
         """
@@ -968,7 +968,7 @@ class DiscourseClient(object):
         Returns:
 
         """
-        return self._delete(u"/categories/{0}".format(category_id), **kwargs)
+        return self._delete("/categories/{0}".format(category_id), **kwargs)
 
     def get_site_info(self):
         """
@@ -987,8 +987,8 @@ class DiscourseClient(object):
         Get latest topics from a category
         """
         if parent:
-            name = u"{0}/{1}".format(parent, name)
-        return self._get(u"/c/{0}/l/latest.json".format(name), **kwargs)
+            name = "{0}/{1}".format(parent, name)
+        return self._get("/c/{0}/l/latest.json".format(name), **kwargs)
 
     def site_settings(self, **kwargs):
         """
@@ -1601,12 +1601,12 @@ class DiscourseClient(object):
                 break
             if not response.ok:
                 try:
-                    msg = u",".join(response.json()["errors"])
+                    msg = ",".join(response.json()["errors"])
                 except (ValueError, TypeError, KeyError):
                     if response.reason:
                         msg = response.reason
                     else:
-                        msg = u"{0}: {1}".format(response.status_code, response.text)
+                        msg = "{0}: {1}".format(response.status_code, response.text)
 
                 if 400 <= response.status_code < 500:
                     if 429 == response.status_code:
@@ -1677,7 +1677,7 @@ class DiscourseClient(object):
         if "errors" in decoded and len(decoded["errors"]) > 0:
             message = decoded.get("message")
             if not message:
-                message = u",".join(decoded["errors"])
+                message = ",".join(decoded["errors"])
             raise DiscourseError(message, response=response)
 
         return decoded
