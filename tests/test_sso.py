@@ -57,7 +57,13 @@ def test_valid_nonce(sso_payload, sso_signature, sso_secret, sso_nonce):
 
 
 def test_valid_redirect_url(
-    sso_secret, sso_nonce, name, email, username, external_id, redirect_url,
+    sso_secret,
+    sso_nonce,
+    name,
+    email,
+    username,
+    external_id,
+    redirect_url,
 ):
     url = sso.sso_redirect_url(
         sso_nonce,

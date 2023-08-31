@@ -289,7 +289,9 @@ class DiscourseClient:
 
         """
         return self._post(
-            f"/users/{username}/preferences/avatar", file=url, **kwargs,
+            f"/users/{username}/preferences/avatar",
+            file=url,
+            **kwargs,
         )
 
     def update_avatar_image(self, username, img, **kwargs):
@@ -307,7 +309,9 @@ class DiscourseClient:
         """
         files = {"file": img}
         return self._post(
-            f"/users/{username}/preferences/avatar", files=files, **kwargs,
+            f"/users/{username}/preferences/avatar",
+            files=files,
+            **kwargs,
         )
 
     def toggle_gravatar(self, username, state=True, **kwargs):
@@ -375,7 +379,9 @@ class DiscourseClient:
 
         """
         return self._put(
-            f"/users/{username}/preferences/email", email=email, **kwargs,
+            f"/users/{username}/preferences/email",
+            email=email,
+            **kwargs,
         )
 
     def update_user(self, username, **kwargs):
@@ -507,7 +513,8 @@ class DiscourseClient:
         if username is None:
             username = self.api_username
         return self._get(
-            f"/topics/private-messages-unread/{username}.json", **kwargs,
+            f"/topics/private-messages-unread/{username}.json",
+            **kwargs,
         )
 
     def category_topics(self, category_id, **kwargs):
@@ -722,7 +729,13 @@ class DiscourseClient:
         return self._put(f"{topic_url}", **kwargs)
 
     def create_post(
-        self, content, category_id=None, topic_id=None, title=None, tags=[], **kwargs,
+        self,
+        content,
+        category_id=None,
+        topic_id=None,
+        title=None,
+        tags=[],
+        **kwargs,
     ):
         """
 
@@ -854,7 +867,10 @@ class DiscourseClient:
 
         """
         return self._post(
-            "/user_badges", username=username, badge_id=badge_id, **kwargs,
+            "/user_badges",
+            username=username,
+            badge_id=badge_id,
+            **kwargs,
         )
 
     def user_badges(self, username, **kwargs):
@@ -881,7 +897,13 @@ class DiscourseClient:
         return self._get(f"/u/{username}/emails.json")
 
     def create_category(
-        self, name, color, text_color="FFFFFF", permissions=None, parent=None, **kwargs,
+        self,
+        name,
+        color,
+        text_color="FFFFFF",
+        permissions=None,
+        parent=None,
+        **kwargs,
     ):
         """
 
@@ -1003,7 +1025,9 @@ class DiscourseClient:
         for setting, value in kwargs.items():
             setting = setting.replace(" ", "_")
             self._request(
-                PUT, f"/admin/site_settings/{setting}", {setting: value},
+                PUT,
+                f"/admin/site_settings/{setting}",
+                {setting: value},
             )
 
     def customize_site_texts(self, site_texts, **kwargs):
@@ -1020,7 +1044,9 @@ class DiscourseClient:
         for site_text, value in site_texts.items():
             kwargs = {"site_text": {"value": value}}
             self._put(
-                f"/admin/customize/site_texts/{site_text}", json=True, **kwargs,
+                f"/admin/customize/site_texts/{site_text}",
+                json=True,
+                **kwargs,
             )
 
     def groups(self, **kwargs):
@@ -1116,9 +1142,7 @@ class DiscourseClient:
         kwargs["automatic_membership_retroactive"] = automatic_membership_retroactive
         kwargs["primary_group"] = primary_group
         kwargs["automatic"] = automatic
-        kwargs[
-            "automatic_membership_email_domains"
-        ] = automatic_membership_email_domains
+        kwargs["automatic_membership_email_domains"] = automatic_membership_email_domains
         kwargs["grant_trust_level"] = grant_trust_level
         kwargs["flair_url"] = flair_url
         kwargs["flair_bg_color"] = flair_bg_color
@@ -1169,7 +1193,8 @@ class DiscourseClient:
         """
         usernames = ",".join(usernames)
         return self._put(
-            f"/groups/{groupid}/owners.json", **{"usernames": usernames},
+            f"/groups/{groupid}/owners.json",
+            **{"usernames": usernames},
         )
 
     def delete_group_owner(self, groupid, userid):
@@ -1187,7 +1212,8 @@ class DiscourseClient:
 
         """
         return self._delete(
-            f"/admin/groups/{groupid}/owners.json", user_id=userid,
+            f"/admin/groups/{groupid}/owners.json",
+            user_id=userid,
         )
 
     def group_owners(self, group_name):
@@ -1216,9 +1242,7 @@ class DiscourseClient:
         """
         Get all members of a group by group name
         """
-        return self._get_paginated_list(
-                f"/groups/{group_name}/members.json",
-                "members", offset, **kwargs)
+        return self._get_paginated_list(f"/groups/{group_name}/members.json", "members", offset, **kwargs)
 
     def add_group_member(self, groupid, username):
         """
@@ -1236,7 +1260,8 @@ class DiscourseClient:
 
         """
         return self._put(
-            f"/groups/{groupid}/members.json", usernames=username,
+            f"/groups/{groupid}/members.json",
+            usernames=username,
         )
 
     def add_group_members(self, groupid, usernames):
@@ -1256,7 +1281,8 @@ class DiscourseClient:
         """
         usernames = ",".join(usernames)
         return self._put(
-            f"/groups/{groupid}/members.json", usernames=usernames,
+            f"/groups/{groupid}/members.json",
+            usernames=usernames,
             json=True,
         )
 
@@ -1291,10 +1317,7 @@ class DiscourseClient:
             JSON API response
 
         """
-        return self._request(
-            DELETE, f"/groups/{groupid}/members.json",
-            json={"usernames": username})
-
+        return self._request(DELETE, f"/groups/{groupid}/members.json", json={"usernames": username})
 
     def color_schemes(self, **kwargs):
         """
@@ -1326,9 +1349,7 @@ class DiscourseClient:
             kwargs["enabled"] = "true"
         else:
             kwargs["enabled"] = "false"
-        kwargs["colors"] = [
-            {"name": name, "hex": color} for name, color in colors.items()
-        ]
+        kwargs["colors"] = [{"name": name, "hex": color} for name, color in colors.items()]
         kwargs = {"color_scheme": kwargs}
         return self._post("/admin/color_schemes.json", json=True, **kwargs)
 
@@ -1449,7 +1470,8 @@ class DiscourseClient:
         https://github.com/discourse/discourse-data-explorer
         """
         return self._post(
-            f"/admin/plugins/explorer/queries/{query_id}/run", **kwargs,
+            f"/admin/plugins/explorer/queries/{query_id}/run",
+            **kwargs,
         )
 
     def notifications(self, category_id, **kwargs):
@@ -1475,7 +1497,10 @@ class DiscourseClient:
 
         """
         return self._request(
-            GET, path, params=kwargs, override_request_kwargs=override_request_kwargs,
+            GET,
+            path,
+            params=kwargs,
+            override_request_kwargs=override_request_kwargs,
         )
 
     def _put(self, path, json=False, override_request_kwargs=None, **kwargs):
@@ -1490,16 +1515,27 @@ class DiscourseClient:
         """
         if not json:
             return self._request(
-                PUT, path, data=kwargs, override_request_kwargs=override_request_kwargs,
+                PUT,
+                path,
+                data=kwargs,
+                override_request_kwargs=override_request_kwargs,
             )
 
         else:
             return self._request(
-                PUT, path, json=kwargs, override_request_kwargs=override_request_kwargs,
+                PUT,
+                path,
+                json=kwargs,
+                override_request_kwargs=override_request_kwargs,
             )
 
     def _post(
-        self, path, files=None, json=False, override_request_kwargs=None, **kwargs,
+        self,
+        path,
+        files=None,
+        json=False,
+        override_request_kwargs=None,
+        **kwargs,
     ):
         """
 
@@ -1539,7 +1575,10 @@ class DiscourseClient:
 
         """
         return self._request(
-            DELETE, path, params=kwargs, override_request_kwargs=override_request_kwargs,
+            DELETE,
+            path,
+            params=kwargs,
+            override_request_kwargs=override_request_kwargs,
         )
 
     def _request(
@@ -1614,19 +1653,16 @@ class DiscourseClient:
                         content_type = response.headers.get("Content-Type")
                         if content_type is not None and "application/json" in content_type:
                             ret = response.json()
-                            wait_delay = (
-                                retry_backoff + ret["extras"]["wait_seconds"]
-                            )  # how long to back off for.
+                            wait_delay = retry_backoff + ret["extras"]["wait_seconds"]  # how long to back off for.
                         else:
                             # We got an early 429 error without a proper JSON body
                             ret = response.content
                             wait_delay = retry_backoff + 10
 
-                        limit_name = response.headers.get(
-                                "Discourse-Rate-Limit-Error-Code", "<unknown>")
+                        limit_name = response.headers.get("Discourse-Rate-Limit-Error-Code", "<unknown>")
 
                         log.info(
-                                f"We have been rate limited (limit: {limit_name}) and will wait {wait_delay} seconds ({retry_count} retries left)",
+                            f"We have been rate limited (limit: {limit_name}) and will wait {wait_delay} seconds ({retry_count} retries left)",
                         )
                         if retry_count > 1:
                             time.sleep(wait_delay)
@@ -1647,7 +1683,8 @@ class DiscourseClient:
 
         if response.status_code == 302:
             raise DiscourseError(
-                "Unexpected Redirect, invalid api key or host?", response=response,
+                "Unexpected Redirect, invalid api key or host?",
+                response=response,
             )
 
         json_content = "application/json; charset=utf-8"

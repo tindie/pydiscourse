@@ -54,7 +54,9 @@ def sso_validate(payload, signature, secret):
         raise DiscourseError("Invalid payload.")
 
     h = hmac.new(
-        secret.encode("utf-8"), payload.encode("utf-8"), digestmod=hashlib.sha256,
+        secret.encode("utf-8"),
+        payload.encode("utf-8"),
+        digestmod=hashlib.sha256,
     )
     this_signature = h.hexdigest()
 
