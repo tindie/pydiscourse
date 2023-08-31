@@ -35,7 +35,7 @@ def now() -> datetime:
     return datetime.utcnow()
 
 
-class DiscourseClient(object):
+class DiscourseClient:
     """Discourse API client"""
 
     def __init__(self, host, api_username, api_key, timeout=None):
