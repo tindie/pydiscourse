@@ -5,13 +5,14 @@ import urllib.parse
 import pytest
 
 
-def test_empty_content_http_ok(discourse_host, discourse_client, requests_mock):
+def test_empty_content_http_ok(discourse_host, discourse_client, discourse_request):
     """Empty content should not raise error
 
     Critical to test against *bytestrings* rather than unicode
     """
-    requests_mock.get(
-        f"{discourse_host}/users/admin/1/unsuspend",
+    discourse_request(
+        "get",
+        "/users/admin/1/unsuspend",
         headers={"Content-Type": "text/plain; charset=utf-8"},
         content=b" ",
     )
@@ -32,17 +33,18 @@ class TestUserManagement:
 
         assert request.called_once
 
-    def test_create_user(self, discourse_host, discourse_client, requests_mock):
-        session_request = requests_mock.get(
-            f"{discourse_host}/session/hp.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
+    def test_users(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/admin/users/list/active.json")
+        discourse_client.users()
+        assert request.called_once
+
+    def test_create_user(self, discourse_host, discourse_client, discourse_request):
+        session_request = discourse_request(
+            "get",
+            "/session/hp.json",
             json={"challenge": "challenge", "value": "value"},
         )
-        user_request = requests_mock.post(
-            f"{discourse_host}/users",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+        user_request = discourse_request("post", "/users")
         discourse_client.create_user(
             "Test User",
             "testuser",
@@ -108,59 +110,39 @@ class TestUserManagement:
 
 
 class TestTopics:
-    def test_hot_topics(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/hot.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_hot_topics(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/hot.json")
         discourse_client.hot_topics()
         assert request.called_once
 
-    def test_latest_topics(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/latest.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_latest_topics(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/latest.json")
         discourse_client.latest_topics()
 
         assert request.called_once
 
-    def test_new_topics(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/new.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_new_topics(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/new.json")
         discourse_client.new_topics()
         assert request.called_once
 
-    def test_topic(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/t/some-test-slug/22.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_topic(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/t/some-test-slug/22.json")
         discourse_client.topic("some-test-slug", 22)
         assert request.called_once
 
-    def test_topics_by(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/topics/created-by/someuser.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
+    def test_topics_by(self, discourse_client, discourse_request):
+        request = discourse_request(
+            "get",
+            "/topics/created-by/someuser.json",
             json={"topic_list": {"topics": []}},
         )
         discourse_client.topics_by("someuser")
 
         assert request.called_once
 
-    def test_invite_user_to_topic(self, discourse_client, requests_mock):
-        request = requests_mock.post(
-            f"{discourse_client.host}/t/22/invite.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_invite_user_to_topic(self, discourse_client, discourse_request):
+        request = discourse_request("post", "/t/22/invite.json")
         discourse_client.invite_user_to_topic("test@example.com", 22)
         assert request.called_once
 
@@ -170,49 +152,37 @@ class TestTopics:
         assert request_payload["topic_id"] == ["22"]
 
 
-class TestEverything:
-    def test_latest_posts(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/posts.json?before=54321",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+class TestPosts:
+    def test_latest_posts(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/posts.json?before=54321")
         discourse_client.latest_posts(before=54321)
         assert request.called_once
 
-    def test_post_by_number(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/posts/by_number/8796/5",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_post_by_number(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/posts/by_number/8796/5")
         discourse_client.post_by_number(8796, 5)
         assert request.called_once
 
-    def test_search(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/search.json?term=needle",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+
+class TestSearch:
+    def test_search(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/search.json?term=needle")
         discourse_client.search(term="needle")
         assert request.called_once
 
-    def test_categories(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/categories.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
+
+class TestCategories:
+    def test_categories(self, discourse_client, discourse_request):
+        request = discourse_request(
+            "get",
+            "/categories.json",
             json={"category_list": {"categories": []}},
         )
         discourse_client.categories()
         assert request.called_once
 
-    def test_update_category(self, discourse_client, requests_mock):
-        request = requests_mock.put(
-            f"{discourse_client.host}/categories/123",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_update_category(self, discourse_client, discourse_request):
+        request = discourse_request("put", "/categories/123")
         discourse_client.update_category(123, a="a", b="b")
 
         request_payload = request.last_request.json()
@@ -220,30 +190,15 @@ class TestEverything:
         assert request_payload["a"] == "a"
         assert request_payload["b"] == "b"
 
-    def test_users(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/admin/users/list/active.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
-        discourse_client.users()
-        assert request.called_once
 
-    def test_badges(self, discourse_client, requests_mock):
-        request = requests_mock.get(
-            f"{discourse_client.host}/admin/badges.json",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+class TestBadges:
+    def test_badges(self, discourse_client, discourse_request):
+        request = discourse_request("get", "/admin/badges.json")
         discourse_client.badges()
         assert request.called_once
 
-    def test_grant_badge_to(self, discourse_client, requests_mock):
-        request = requests_mock.post(
-            f"{discourse_client.host}/user_badges",
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            json={},
-        )
+    def test_grant_badge_to(self, discourse_client, discourse_request):
+        request = discourse_request("post", "/user_badges")
         discourse_client.grant_badge_to("username", 1)
 
         request_payload = urllib.parse.parse_qs(request.last_request.text)
