@@ -180,6 +180,15 @@ class TestEverything:
         discourse_client.latest_posts(before=54321)
         assert request.called_once
 
+    def test_post_by_number(self, discourse_client, requests_mock):
+        request = requests_mock.get(
+            f"{discourse_client.host}/posts/by_number/8796/5",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            json={},
+        )
+        discourse_client.post_by_number(8796, 5)
+        assert request.called_once
+
     def test_search(self, discourse_client, requests_mock):
         request = requests_mock.get(
             f"{discourse_client.host}/search.json?term=needle",
