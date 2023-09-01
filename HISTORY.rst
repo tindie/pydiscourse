@@ -3,6 +3,11 @@
 Release history
 ===============
 
+1.6.1
+-----
+
+- Adds `posts_by_number` endpoint from @Dettorer
+
 1.6.0
 -----
 
